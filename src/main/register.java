@@ -166,11 +166,14 @@ public class register extends javax.swing.JFrame {
             
             config con = new config();
             String sql = "INSERT INTO ACCOUNTS (name, email, password, type, status) VALUES (?, ?, ?, ?, ?)";
-            con.addRecord(sql, name.getText(), email.getText(), password.getText(), "ADMIN", "Pending");
+            con.addRecord(sql, name.getText(), email.getText(), password.getText(), "User", "Active");
             
             JOptionPane.showMessageDialog(null, "RECORD ADDED SUCCESSFULLY!");
             
-        }       
+        }   
+        LOGin log = new LOGin();
+        log.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jLabel4MouseClicked
 
     /**

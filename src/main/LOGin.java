@@ -5,6 +5,11 @@
  */
 package main;
 
+import admin.admin;
+import config.config;
+import javax.swing.JOptionPane;
+import user.user;
+
 /**
  *
  * @author USER27
@@ -32,13 +37,13 @@ public class LOGin extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        mail = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        pass = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -69,21 +74,13 @@ public class LOGin extends javax.swing.JFrame {
         jPanel1.add(jLabel3);
         jLabel3.setBounds(160, 110, 90, 19);
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        mail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                mailActionPerformed(evt);
             }
         });
-        jPanel1.add(jTextField1);
-        jTextField1.setBounds(260, 140, 210, 30);
-
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jTextField2);
-        jTextField2.setBounds(260, 100, 210, 30);
+        jPanel1.add(mail);
+        mail.setBounds(260, 100, 210, 30);
 
         jPanel3.setBackground(new java.awt.Color(51, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -127,6 +124,8 @@ public class LOGin extends javax.swing.JFrame {
         });
         jPanel1.add(jLabel6);
         jLabel6.setBounds(250, 230, 210, 30);
+        jPanel1.add(pass);
+        pass.setBounds(260, 140, 210, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -145,13 +144,9 @@ public class LOGin extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void mailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
-
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_mailActionPerformed
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
         land ld = new land();
@@ -166,9 +161,31 @@ public class LOGin extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel6MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        dashboard dash = new dashboard();
-        dash.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
+       config con = new config();
+       String sql = "SELECT * FROM  ACCOUNTS WHERE email = ? AND password = ? AND status = ?";
+       String accountType = con.authenticate(sql, mail.getText(), pass.getText(), "Active");
+         
+       if(accountType !=null){
+       
+       JOptionPane.showMessageDialog(null, "LOGIN SUCCESS!");
+        
+            if(accountType.equals("Admin")){
+                admin ad = new admin();
+                ad.setVisible(true);
+                this.dispose();
+            }else if (accountType.equals("User")){
+                user us = new user();
+                us.setVisible(true);
+                this.dispose();
+            }else{
+                JOptionPane.showMessageDialog(null, "INVALID ACCOUNT TYPE!");
+                return;
+            }
+            this.dispose();
+       }else{
+           JOptionPane.showMessageDialog(null, "INVALID CREDENTIALS / ACCOUNT INACTIVE");
+       }
+       
     }//GEN-LAST:event_jLabel4MouseClicked
 
     /**
@@ -217,7 +234,7 @@ public class LOGin extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTextField mail;
+    private javax.swing.JPasswordField pass;
     // End of variables declaration//GEN-END:variables
 }

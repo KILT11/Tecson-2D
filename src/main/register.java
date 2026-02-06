@@ -166,7 +166,7 @@ public class register extends javax.swing.JFrame {
             
             config con = new config();
             String sql = "INSERT INTO ACCOUNTS (name, email, password, type, status) VALUES (?, ?, ?, ?, ?)";
-            con.addRecord(sql, name.getText(), email.getText(), password.getText(), "User", "Active");
+            con.addRecord(sql, name.getText(), email.getText(), password.getText(), "UNKNOWN", "Pending");
             
             JOptionPane.showMessageDialog(null, "RECORD ADDED SUCCESSFULLY!");
             

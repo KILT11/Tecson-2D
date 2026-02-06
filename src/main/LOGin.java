@@ -183,7 +183,7 @@ public class LOGin extends javax.swing.JFrame {
             }
             this.dispose();
        }else{
-           JOptionPane.showMessageDialog(null, "INVALID CREDENTIALS / ACCOUNT INACTIVE");
+           JOptionPane.showMessageDialog(null, "INVALID CREDENTIALS / ACCOUNT INACTIVE (CONTACT THE ADMIN)");
        }
        
     }//GEN-LAST:event_jLabel4MouseClicked

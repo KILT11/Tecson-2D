@@ -76,7 +76,12 @@ public class userView extends javax.swing.JFrame {
                 jLabel2MouseDragged(evt);
             }
         });
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 29, 70, 40));
+        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel2MouseClicked(evt);
+            }
+        });
+        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 150, 30));
 
         jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -155,7 +160,7 @@ public class userView extends javax.swing.JFrame {
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
             LOGin log = new LOGin();
             log.setVisible(true);
-            
+            this.dispose();
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void jLabel4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseEntered
@@ -169,7 +174,7 @@ public class userView extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel2MouseDragged
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-       try {
+        try {
         // Get the selected row
         int selectedRow = usertable.getSelectedRow();
         
@@ -179,10 +184,11 @@ public class userView extends javax.swing.JFrame {
             return;
         }
         
-        // Get current values
+        // Get current values (assuming column order: acc_id, name, email, password, type, status)
         String currentId = usertable.getValueAt(selectedRow, 0).toString();
         String username = usertable.getValueAt(selectedRow, 1).toString();
-        String currentType = usertable.getValueAt(selectedRow, 3).toString();
+        String currentType = usertable.getValueAt(selectedRow, 4).toString();
+        String currentStatus = usertable.getValueAt(selectedRow, 5).toString();
         
         // Type dropdown
         String[] types = {"Admin", "User"};
@@ -195,17 +201,32 @@ public class userView extends javax.swing.JFrame {
             currentType);
         
         if (newType == null) {
-            return;
+            return; // User cancelled
+        }
+        
+        // Status dropdown
+        String[] statuses = {"Active", "Pending", "Inactive"};
+        String newStatus = (String) javax.swing.JOptionPane.showInputDialog(this,
+            "Select status for: " + username,
+            "Update User Status",
+            javax.swing.JOptionPane.QUESTION_MESSAGE,
+            null,
+            statuses,
+            currentStatus);
+        
+        if (newStatus == null) {
+            return; // User cancelled
         }
         
         // Update database
-        String sql = "UPDATE ACCOUNTS SET type = ? WHERE id = ?";
+        String sql = "UPDATE ACCOUNTS SET type = ?, status = ? WHERE acc_id = ?";
         
         try (java.sql.Connection conn = config.connectDB();
              java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
             
             pstmt.setString(1, newType);
-            pstmt.setString(2, currentId);
+            pstmt.setString(2, newStatus);
+            pstmt.setString(3, currentId);
             
             int rowsAffected = pstmt.executeUpdate();
             
@@ -214,7 +235,8 @@ public class userView extends javax.swing.JFrame {
                     "User updated successfully!\n\n" +
                     "Updated Record (ID: " + currentId + "):\n" +
                     "Username: " + username + "\n" +
-                    "Type: " + newType);
+                    "Type: " + newType + "\n" +
+                    "Status: " + newStatus);
                 
                 displayUser(); // Refresh table
             }
@@ -237,6 +259,12 @@ public class userView extends javax.swing.JFrame {
             view.setVisible(true);
             this.dispose();// TODO add your handling code here:
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
+            admin ad = new admin();
+            ad.setVisible(true);
+            this.dispose();           // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel2MouseClicked
 
     /**
      * @param args the command line arguments

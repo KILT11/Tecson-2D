@@ -44,7 +44,7 @@ public class land extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("TASK MANAGEMENT SYSTEM");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 10, 290, 60));
 
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 0, 580, 80);
@@ -63,7 +63,7 @@ public class land extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jButton1);
-        jButton1.setBounds(200, 180, 130, 23);
+        jButton1.setBounds(220, 180, 130, 23);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

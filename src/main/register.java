@@ -21,6 +21,38 @@ public class register extends javax.swing.JFrame {
         initComponents();
     }
 
+    private boolean isPasswordSecure(String password) {
+    // Customize these requirements as needed:
+    boolean hasMinLength = password.length() >= 8;
+    boolean hasUpperCase = password.matches(".*[A-Z].*");
+    boolean hasLowerCase = password.matches(".*[a-z].*");
+    boolean hasNumber = password.matches(".*\\d.*");
+    boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*");
+    boolean hasNoSpaces = !password.contains(" ");
+    
+    // All requirements must be met
+    return hasMinLength && hasUpperCase && hasLowerCase && 
+           hasNumber && hasSpecialChar && hasNoSpaces;
+}
+    
+    
+    private boolean isEmailExists(String email) {
+    String sql = "SELECT COUNT(*) as count FROM ACCOUNTS WHERE email = ?";
+    
+    try (java.sql.Connection conn = config.connectDB();
+         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, email);
+        try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        }
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error checking email: " + e.getMessage());
+    }
+    return false;
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,21 +191,76 @@ public class register extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-        if(name.getText().isEmpty() && email.getText().isEmpty() && password.getText().isEmpty()){
-                JOptionPane.showMessageDialog(null, "All fields are required");
+        if (name.getText().trim().isEmpty() || email.getText().trim().isEmpty() || password.getText().isEmpty()) {
+        JOptionPane.showMessageDialog(null, 
+            "All fields are required!",
+            "Validation Error",
+            JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    String userEmail = email.getText().trim();
+    String userPassword = password.getText();
+    String userName = name.getText().trim();
+    
+    // 2. Check if email already exists
+    if (isEmailExists(userEmail)) {
+        JOptionPane.showMessageDialog(null, 
+            "This email is already registered!\n\n" +
+            "Please use a different email address.",
+            "Email Already Exists",
+            JOptionPane.ERROR_MESSAGE);
+        email.setText("");
+        email.requestFocus();
+        return;
+    }
+    
+    // 3. Validate password
+    if (!isPasswordSecure(userPassword)) {
+        JOptionPane.showMessageDialog(null, 
+            "Insecure Password!\n\n" +
+            "Your password must meet these requirements:\n" +
+            "• At least 8 characters long\n" +
+            "• At least one uppercase letter (A-Z)\n" +
+            "• At least one lowercase letter (a-z)\n" +
+            "• At least one number (0-9)\n" +
+            "• At least one special character (!@#$%^&*)\n\n" +
+            "Please create a stronger password.",
+            "Password Validation Failed",
+            JOptionPane.ERROR_MESSAGE);
+        password.setText("");
+        password.requestFocus();
+        return;
+    }
+    
+    // 4. Add record to database
+    try {
+        config con = new config();
+        String sql = "INSERT INTO ACCOUNTS (name, email, password, type, status) VALUES (?, ?, ?, ?, ?)";
+        con.addRecord(sql, userName, userEmail, userPassword, "Unknown", "Pending");
         
-        }else{
-            
-            config con = new config();
-            String sql = "INSERT INTO ACCOUNTS (name, email, password, type, status) VALUES (?, ?, ?, ?, ?)";
-            con.addRecord(sql, name.getText(), email.getText(), password.getText(), "UNKNOWN", "Pending");
-            
-            JOptionPane.showMessageDialog(null, "RECORD ADDED SUCCESSFULLY!");
-            
-        }   
+        JOptionPane.showMessageDialog(null, 
+            "REGISTRATION SUCCESSFUL!\n\n" +
+            "Welcome, " + userName + "!\n" +
+            "Your account has been created and is pending approval.",
+            "Success",
+            JOptionPane.INFORMATION_MESSAGE);
+        
+        // Clear fields and go to login
+        name.setText("");
+        email.setText("");
+        password.setText("");
+        
         LOGin log = new LOGin();
         log.setVisible(true);
         this.dispose();
+        
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, 
+            "Registration Error: " + e.getMessage(),
+            "Error",
+            JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_jLabel4MouseClicked
 
     /**

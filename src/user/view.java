@@ -6,6 +6,10 @@
 package user;
 
 import config.config;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import main.LOGin;
 
 /**
@@ -19,14 +23,47 @@ public class view extends javax.swing.JFrame {
      */
     public view() {
         initComponents();
-        displayUser();
+        loadUserProfile();
+       
     }
-    void displayUser(){
-        config con = new config();
-        String sql = "SELECT * FROM ACCOUNTS";
-        con.displayData(sql, usertable);
+     private void loadUserProfile() {
+        // Get the logged-in user's ID from the config class
+        int userId = config.loggedInAID;
+        
+        if (userId == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "No user logged in!");
+            return;
+        }
+        
+        String sql = "SELECT name, email, password, type FROM ACCOUNTS WHERE acc_id = ?";
+        
+        try (Connection conn = config.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, userId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Set the label text with the database values
+                    jLabel2.setText(rs.getString("name"));
+                    jLabel3.setText(rs.getString("email"));
+                    jLabel4.setText(rs.getString("password"));
+                    jLabel5.setText(rs.getString("type"));
+                } else {
+                    javax.swing.JOptionPane.showMessageDialog(this,
+                        "User not found!");
+                }
+            }
+            
+        } catch (SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Error loading profile: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
     
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -43,8 +80,14 @@ public class view extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        usertable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,18 +100,18 @@ public class view extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("USER DASHBOARD");
+        jLabel1.setText("PROFILE ");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 580, 80);
+        jPanel2.setBounds(0, 0, 590, 80);
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton2.setBackground(new java.awt.Color(255, 255, 255));
         jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton2.setText(" PROFILE");
+        jButton2.setText("VIEW PROFILE");
         jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton2MouseClicked(evt);
@@ -79,7 +122,7 @@ public class view extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 100, 23));
+        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 140, 20));
 
         jButton1.setBackground(new java.awt.Color(255, 255, 255));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -94,34 +137,58 @@ public class view extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 100, 23));
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 100, 23));
 
         jPanel1.add(jPanel3);
-        jPanel3.setBounds(440, 80, 140, 310);
+        jPanel3.setBounds(420, 80, 170, 310);
 
-        usertable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(usertable);
+        jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel2.setText("Name");
+        jPanel1.add(jLabel2);
+        jLabel2.setBounds(200, 120, 170, 30);
 
-        jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(30, 110, 370, 160);
+        jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel3.setText("Email");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(200, 160, 170, 23);
+
+        jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel4.setText("Password");
+        jPanel1.add(jLabel4);
+        jLabel4.setBounds(200, 240, 100, 23);
+
+        jLabel5.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel5.setText("Type");
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(200, 200, 180, 23);
+
+        jLabel6.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel6.setText("Name:");
+        jPanel1.add(jLabel6);
+        jLabel6.setBounds(100, 120, 150, 30);
+
+        jLabel7.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel7.setText("Email:");
+        jPanel1.add(jLabel7);
+        jLabel7.setBounds(110, 160, 150, 23);
+
+        jLabel8.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel8.setText("Type:");
+        jPanel1.add(jLabel8);
+        jLabel8.setBounds(110, 200, 150, 23);
+
+        jLabel9.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel9.setText("Password:");
+        jPanel1.add(jLabel9);
+        jLabel9.setBounds(70, 240, 180, 23);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 579, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 10, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,34 +198,30 @@ public class view extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-            LOGin log = new LOGin();
-            log.setVisible(true);        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1MouseClicked
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-                view v = new view ();
-                v.setVisible(true);
-                this.dispose();// TODO add your handling code here:
-    }//GEN-LAST:event_jButton2MouseClicked
+    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+        LOGin log = new LOGin();
+        log.setVisible(true); 
+        this.dispose();// TODO add your handling code here:
+    }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+        view v = new view ();
+        v.setVisible(true);
+        this.dispose();// TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MouseClicked
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -189,10 +252,16 @@ public class view extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable usertable;
     // End of variables declaration//GEN-END:variables
 }

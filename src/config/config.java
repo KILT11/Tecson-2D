@@ -18,6 +18,7 @@ import net.proteanit.sql.DbUtils;
  */
 public class config {
     
+    public static int loggedInAID;
     //Connection Method to SQLITE
 public static Connection connectDB() {
         Connection con = null;
@@ -76,6 +77,10 @@ public String authenticate(String sql, Object... values) {
 
         try (ResultSet rs = pstmt.executeQuery()) {
             if (rs.next()) {
+                // Store the logged-in user's ID
+                loggedInAID = rs.getInt("acc_id");
+                
+                // Return the user type
                 return rs.getString("type");
             }
         }
@@ -133,5 +138,7 @@ public void updateRecord(String sql, Object... values) {
         System.out.println("Error updating record: " + e.getMessage());
     }
 }
+
+
 
 }

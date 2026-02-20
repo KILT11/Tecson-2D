@@ -6,7 +6,11 @@
 package main;
 
 import admin.admin;
+import config.SessionManager;
 import config.config;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import user.user;
 
@@ -16,10 +20,7 @@ import user.user;
  */
 public class LOGin extends javax.swing.JFrame {
 
-    /**
-     * Creates new form LOGin
-     */
-    public LOGin() {
+     public LOGin() {
         initComponents();
     }
 
@@ -161,30 +162,74 @@ public class LOGin extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel6MouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-       config con = new config();
-       String sql = "SELECT * FROM  ACCOUNTS WHERE email = ? AND password = ? AND status = ?";
-       String accountType = con.authenticate(sql, mail.getText(), pass.getText(), "Active");
-         
-       if(accountType !=null){
-       
-       JOptionPane.showMessageDialog(null, "LOGIN SUCCESS!");
-        
-            if(accountType.equals("Admin")){
-                admin ad = new admin();
-                ad.setVisible(true);
-                this.dispose();
-            }else if (accountType.equals("User")){
-                user us = new user();
-                us.setVisible(true);
-                this.dispose();
-            }else{
-                JOptionPane.showMessageDialog(null, "INVALID ACCOUNT TYPE!");
-                return;
+      String emailInput = mail.getText().trim();
+        String passInput  = new String(pass.getPassword()).trim();
+
+        // Basic validation
+        if (emailInput.isEmpty() || passInput.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                "Please enter both email and password.",
+                "Input Required", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Query all user fields in one go
+        String sql = "SELECT acc_id, name, email, password, type, status "
+                   + "FROM ACCOUNTS WHERE email = ? AND password = ? AND status = ?";
+
+        try (Connection conn = config.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, emailInput);
+            pstmt.setString(2, passInput);
+            pstmt.setString(3, "Active");
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+
+                    // =============================================
+                    //   CREATE SESSION with all user information
+                    // =============================================
+                    SessionManager.getInstance().createSession(
+                        rs.getInt("acc_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("type"),
+                        rs.getString("status")
+                    );
+
+                    String accountType = SessionManager.getInstance().getUserType();
+
+                    JOptionPane.showMessageDialog(this,
+                        "Welcome, " + SessionManager.getInstance().getUserName() + "!",
+                        "Login Successful", JOptionPane.INFORMATION_MESSAGE);
+
+                    if ("Admin".equals(accountType)) {
+                        new admin().setVisible(true);
+                    } else if ("User".equals(accountType)) {
+                        new user().setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(this,
+                            "Invalid account type!",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                        SessionManager.getInstance().clearSession();
+                        return;
+                    }
+
+                    this.dispose();
+
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                        "Invalid credentials or account is inactive.\nContact the admin.",
+                        "Login Failed", JOptionPane.ERROR_MESSAGE);
+                }
             }
-            this.dispose();
-       }else{
-           JOptionPane.showMessageDialog(null, "INVALID CREDENTIALS / ACCOUNT INACTIVE (CONTACT THE ADMIN)");
-       }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Login Error: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
        
     }//GEN-LAST:event_jLabel4MouseClicked
 
@@ -192,11 +237,6 @@ public class LOGin extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -204,24 +244,12 @@ public class LOGin extends javax.swing.JFrame {
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LOGin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LOGin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LOGin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (Exception ex) {
             java.util.logging.Logger.getLogger(LOGin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new LOGin().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new LOGin().setVisible(true));
     }
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

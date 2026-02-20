@@ -5,11 +5,7 @@
  */
 package user;
 
-import config.config;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import config.SessionManager;
 import main.LOGin;
 
 /**
@@ -18,50 +14,36 @@ import main.LOGin;
  */
 public class view extends javax.swing.JFrame {
 
-    /**
-     * Creates new form view
-     */
-    public view() {
+   public view() {
         initComponents();
         loadUserProfile();
-       
     }
-     private void loadUserProfile() {
-        // Get the logged-in user's ID from the config class
-        int userId = config.loggedInAID;
-        
-        if (userId == 0) {
+
+    /**
+     * Loads the logged-in user's info from the session — no extra DB query needed.
+     */
+    private void loadUserProfile() {
+        SessionManager session = SessionManager.getInstance();
+
+        // Guard: if no active session, kick back to login
+        if (!session.isLoggedIn()) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                "No user logged in!");
+                "No active session found. Please log in again.",
+                "Session Expired",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            new LOGin().setVisible(true);
+            this.dispose();
             return;
         }
-        
-        String sql = "SELECT name, email, password, type FROM ACCOUNTS WHERE acc_id = ?";
-        
-        try (Connection conn = config.connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, userId);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    // Set the label text with the database values
-                    jLabel2.setText(rs.getString("name"));
-                    jLabel3.setText(rs.getString("email"));
-                    jLabel4.setText(rs.getString("password"));
-                    jLabel5.setText(rs.getString("type"));
-                } else {
-                    javax.swing.JOptionPane.showMessageDialog(this,
-                        "User not found!");
-                }
-            }
-            
-        } catch (SQLException e) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Error loading profile: " + e.getMessage());
-            e.printStackTrace();
-        }
+
+        // Populate labels from session data
+        lblStatusVal.setText(session.getUserName());
+        lblEmailVal.setText(session.getUserEmail());
+        lblTypeVal.setText(session.getUserType());
+        lblStatusVal.setText(session.getUserStatus());
+        lblIdVal.setText(String.valueOf(session.getUserId()));
     }
+
     
     
 
@@ -80,14 +62,18 @@ public class view extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        lblStatusVal = new javax.swing.JLabel();
+        lblEmailVal = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        lblTypeVal = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
+        lblIdVal = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        lblNameVal2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -142,30 +128,30 @@ public class view extends javax.swing.JFrame {
         jPanel1.add(jPanel3);
         jPanel3.setBounds(420, 80, 170, 310);
 
-        jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel2.setText("Name");
-        jPanel1.add(jLabel2);
-        jLabel2.setBounds(200, 120, 170, 30);
+        lblStatusVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        lblStatusVal.setText("Status");
+        jPanel1.add(lblStatusVal);
+        lblStatusVal.setBounds(200, 270, 170, 40);
 
-        jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel3.setText("Email");
-        jPanel1.add(jLabel3);
-        jLabel3.setBounds(200, 160, 170, 23);
+        lblEmailVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        lblEmailVal.setText("Email");
+        jPanel1.add(lblEmailVal);
+        lblEmailVal.setBounds(190, 160, 170, 23);
 
         jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel4.setText("Password");
         jPanel1.add(jLabel4);
         jLabel4.setBounds(200, 240, 100, 23);
 
-        jLabel5.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel5.setText("Type");
-        jPanel1.add(jLabel5);
-        jLabel5.setBounds(200, 200, 180, 23);
+        lblTypeVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        lblTypeVal.setText("Type");
+        jPanel1.add(lblTypeVal);
+        lblTypeVal.setBounds(200, 200, 180, 23);
 
         jLabel6.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel6.setText("Name:");
+        jLabel6.setText("ID:");
         jPanel1.add(jLabel6);
-        jLabel6.setBounds(100, 120, 150, 30);
+        jLabel6.setBounds(110, 90, 30, 30);
 
         jLabel7.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel7.setText("Email:");
@@ -178,9 +164,29 @@ public class view extends javax.swing.JFrame {
         jLabel8.setBounds(110, 200, 150, 23);
 
         jLabel9.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel9.setText("Password:");
+        jLabel9.setText("Status:");
         jPanel1.add(jLabel9);
-        jLabel9.setBounds(70, 240, 180, 23);
+        jLabel9.setBounds(100, 280, 60, 23);
+
+        lblIdVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        lblIdVal.setText("ID");
+        jPanel1.add(lblIdVal);
+        lblIdVal.setBounds(200, 90, 30, 30);
+
+        jLabel10.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel10.setText("Password:");
+        jPanel1.add(jLabel10);
+        jLabel10.setBounds(70, 240, 180, 23);
+
+        jLabel11.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        jLabel11.setText("Name:");
+        jPanel1.add(jLabel11);
+        jLabel11.setBounds(100, 120, 150, 30);
+
+        lblNameVal2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
+        lblNameVal2.setText("Name");
+        jPanel1.add(lblNameVal2);
+        lblNameVal2.setBounds(200, 120, 170, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -222,40 +228,27 @@ public class view extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        try {
+      try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(view.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(view.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(view.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (Exception ex) {
             java.util.logging.Logger.getLogger(view.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new view().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new view().setVisible(true));
+    
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -263,5 +256,10 @@ public class view extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel lblEmailVal;
+    private javax.swing.JLabel lblIdVal;
+    private javax.swing.JLabel lblNameVal2;
+    private javax.swing.JLabel lblStatusVal;
+    private javax.swing.JLabel lblTypeVal;
     // End of variables declaration//GEN-END:variables
 }

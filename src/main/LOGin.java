@@ -75,6 +75,11 @@ public class LOGin extends javax.swing.JFrame {
         jPanel1.add(jLabel3);
         jLabel3.setBounds(160, 110, 90, 19);
 
+        mail.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mailMouseClicked(evt);
+            }
+        });
         mail.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 mailActionPerformed(evt);
@@ -163,7 +168,7 @@ public class LOGin extends javax.swing.JFrame {
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
       String emailInput = mail.getText().trim();
-        String passInput  = new String(pass.getPassword()).trim();
+      String passInput  = new String(pass.getPassword()).trim();
 
         // Basic validation
         if (emailInput.isEmpty() || passInput.isEmpty()) {
@@ -232,6 +237,10 @@ public class LOGin extends javax.swing.JFrame {
         }
        
     }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void mailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mailMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mailMouseClicked
 
     /**
      * @param args the command line arguments

@@ -90,7 +90,7 @@ public class view extends javax.swing.JFrame {
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
         jPanel1.add(jPanel2);
-        jPanel2.setBounds(0, 0, 590, 80);
+        jPanel2.setBounds(0, 0, 600, 80);
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -126,7 +126,7 @@ public class view extends javax.swing.JFrame {
         jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 100, 23));
 
         jPanel1.add(jPanel3);
-        jPanel3.setBounds(420, 80, 170, 310);
+        jPanel3.setBounds(420, 80, 180, 310);
 
         lblStatusVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         lblStatusVal.setText("Status");
@@ -151,7 +151,7 @@ public class view extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel6.setText("ID:");
         jPanel1.add(jLabel6);
-        jLabel6.setBounds(110, 90, 30, 30);
+        jLabel6.setBounds(140, 90, 30, 30);
 
         jLabel7.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel7.setText("Email:");
@@ -192,9 +192,7 @@ public class view extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 10, Short.MAX_VALUE)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 589, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 601, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -202,6 +200,7 @@ public class view extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

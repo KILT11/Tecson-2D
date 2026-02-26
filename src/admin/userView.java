@@ -7,7 +7,7 @@ package admin;
 
 import config.config;
 import main.LOGin;
-
+import config.SessionManager;
 /**
  *
  * @author USER27
@@ -17,17 +17,61 @@ public class userView extends javax.swing.JFrame {
     /**
      * Creates new form userView
      */
-    public userView() {
-        initComponents();
-        displayUser();
-    }
+   public userView() {
+     initComponents();
 
+        // ✅ CORRECT - uses SessionManager directly, NOT config.SessionManager
+        if (!SessionManager.getInstance().isLoggedIn() ||
+            !"Admin".equals(SessionManager.getInstance().getUserType())) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Access Denied! Please log in first.",
+                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+            LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
+        }
+
+        displayUser();
+}
     void displayUser(){
         config con = new config();
         String sql = "SELECT * FROM ACCOUNTS";
         con.displayData(sql, usertable);
     
     }
+    
+    private boolean isPasswordSecure(String password) {
+    // Customize these requirements as needed:
+    boolean hasMinLength = password.length() >= 8;
+    boolean hasUpperCase = password.matches(".*[A-Z].*");
+    boolean hasLowerCase = password.matches(".*[a-z].*");
+    boolean hasNumber = password.matches(".*\\d.*");
+    boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*");
+    boolean hasNoSpaces = !password.contains(" ");
+    
+    // All requirements must be met
+    return hasMinLength && hasUpperCase && hasLowerCase && 
+           hasNumber && hasSpecialChar && hasNoSpaces;
+}
+    
+    private boolean isEmailExists(String email) {
+    String sql = "SELECT COUNT(*) as count FROM ACCOUNTS WHERE email = ?";
+    
+    try (java.sql.Connection conn = config.connectDB();
+         java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, email);
+        try (java.sql.ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("count") > 0;
+            }
+        }
+    } catch (java.sql.SQLException e) {
+        System.out.println("Error checking email: " + e.getMessage());
+    }
+    return false;
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,10 +88,16 @@ public class userView extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        user = new javax.swing.JLabel();
+        user1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         usertable = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        ADDUSER = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        UPDATE = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        DELETE = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,7 +131,7 @@ public class userView extends javax.swing.JFrame {
                 jLabel2MouseClicked(evt);
             }
         });
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 150, 30));
+        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 30));
 
         jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -106,6 +156,26 @@ public class userView extends javax.swing.JFrame {
         });
         jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 254, 60, 30));
 
+        user.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        user.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        user.setText("VIEW USER");
+        user.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                userMouseClicked(evt);
+            }
+        });
+        jPanel3.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 70, 30));
+
+        user1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        user1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        user1.setText("CREATE TASK");
+        user1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                user1MouseClicked(evt);
+            }
+        });
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 90, 30));
+
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
         usertable.setModel(new javax.swing.table.DefaultTableModel(
@@ -126,18 +196,55 @@ public class userView extends javax.swing.JFrame {
         jPanel4.setBackground(new java.awt.Color(0, 0, 255));
         jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel5.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("UPDATE");
-        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel5MouseClicked(evt);
+        ADDUSER.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        ADDUSER.setForeground(new java.awt.Color(255, 255, 255));
+        ADDUSER.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ADDUSER.setText("ADD USER");
+        ADDUSER.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                ADDUSERMouseDragged(evt);
             }
         });
-        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 80, 30));
+        ADDUSER.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ADDUSERMouseClicked(evt);
+            }
+        });
+        jPanel4.add(ADDUSER, new org.netbeans.lib.awtextra.AbsoluteConstraints(-5, -1, 90, 30));
 
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 90, 80, 30));
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 90, 80, 30));
+
+        jPanel6.setBackground(new java.awt.Color(0, 0, 255));
+        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        UPDATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        UPDATE.setForeground(new java.awt.Color(255, 255, 255));
+        UPDATE.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        UPDATE.setText("UPDATE");
+        UPDATE.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                UPDATEMouseClicked(evt);
+            }
+        });
+        jPanel6.add(UPDATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 80, 30));
+
+        jPanel1.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 90, 80, 30));
+
+        jPanel5.setBackground(new java.awt.Color(0, 0, 255));
+        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        DELETE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        DELETE.setForeground(new java.awt.Color(255, 255, 255));
+        DELETE.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        DELETE.setText("DELETE");
+        DELETE.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                DELETEMouseClicked(evt);
+            }
+        });
+        jPanel5.add(DELETE, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 80, 30));
+
+        jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 80, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -173,7 +280,7 @@ public class userView extends javax.swing.JFrame {
         this.dispose();// TODO add your handling code here:
     }//GEN-LAST:event_jLabel2MouseDragged
 
-    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+    private void UPDATEMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UPDATEMouseClicked
         try {
         // Get the selected row
         int selectedRow = usertable.getSelectedRow();
@@ -252,7 +359,7 @@ public class userView extends javax.swing.JFrame {
     }
 
         // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel5MouseClicked
+    }//GEN-LAST:event_UPDATEMouseClicked
 
     private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
             userView view = new userView();
@@ -265,6 +372,75 @@ public class userView extends javax.swing.JFrame {
             ad.setVisible(true);
             this.dispose();           // TODO add your handling code here:
     }//GEN-LAST:event_jLabel2MouseClicked
+
+    private void userMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userMouseClicked
+        userView view = new userView();
+        view.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_userMouseClicked
+
+    private void DELETEMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DELETEMouseClicked
+            try {
+        int selectedRow = usertable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Please select a user to delete!");
+            return;
+        }
+
+        String currentId = usertable.getValueAt(selectedRow, 0).toString();
+        String username  = usertable.getValueAt(selectedRow, 1).toString();
+
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete: " + username + "?",
+            "Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
+
+        String sql = "DELETE FROM ACCOUNTS WHERE acc_id = ?";
+
+        try (java.sql.Connection conn = config.connectDB();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, currentId);
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "User \"" + username + "\" deleted successfully!");
+
+                displayUser(); // Refresh table
+            }
+
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Database Error: " + e.getMessage());
+        }
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage());
+    }            // TODO add your handling code here:
+    }//GEN-LAST:event_DELETEMouseClicked
+
+    private void user1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_user1MouseClicked
+
+        TASK ts = new TASK();
+        ts.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_user1MouseClicked
+
+    private void ADDUSERMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ADDUSERMouseDragged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ADDUSERMouseDragged
+
+    private void ADDUSERMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ADDUSERMouseClicked
+            ADDUSER add = new ADDUSER();
+            add.setVisible(true);
+            this.dispose();
+// TODO add your handling code here:
+    }//GEN-LAST:event_ADDUSERMouseClicked
 
     /**
      * @param args the command line arguments
@@ -302,16 +478,22 @@ public class userView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ADDUSER;
+    private javax.swing.JLabel DELETE;
+    private javax.swing.JLabel UPDATE;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel user;
+    private javax.swing.JLabel user1;
     private javax.swing.JTable usertable;
     // End of variables declaration//GEN-END:variables
 }

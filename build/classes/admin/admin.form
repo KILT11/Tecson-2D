@@ -156,14 +156,14 @@
                   <Font name="Century Gothic" size="14" style="1"/>
                 </Property>
                 <Property name="horizontalAlignment" type="int" value="0"/>
-                <Property name="text" type="java.lang.String" value="TASK"/>
+                <Property name="text" type="java.lang.String" value="CREATE TASK"/>
               </Properties>
               <Events>
                 <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="user1MouseClicked"/>
               </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-                  <AbsoluteConstraints x="40" y="100" width="70" height="30"/>
+                  <AbsoluteConstraints x="30" y="100" width="90" height="30"/>
                 </Constraint>
               </Constraints>
             </Component>

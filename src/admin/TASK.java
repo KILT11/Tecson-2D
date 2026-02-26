@@ -5,9 +5,11 @@
  */
 package admin;
 
+import config.SessionManager;
 import config.config;
 import main.LOGin;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 /**
  *
  * @author USER29
@@ -18,7 +20,19 @@ public class TASK extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public TASK() {
-        initComponents();
+         initComponents();
+
+        // ✅ CORRECT - uses SessionManager directly, NOT config.SessionManager
+        if (!SessionManager.getInstance().isLoggedIn() ||
+            !"Admin".equals(SessionManager.getInstance().getUserType())) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Access Denied! Please log in first.",
+                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+            LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
+        }
     }
 
     /**
@@ -105,13 +119,13 @@ public class TASK extends javax.swing.JFrame {
 
         user1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        user1.setText("TASK");
+        user1.setText("CREATE TASK");
         user1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 user1MouseClicked(evt);
             }
         });
-        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 70, 30));
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 100, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
@@ -169,6 +183,11 @@ public class TASK extends javax.swing.JFrame {
         Task.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TaskMouseClicked(evt);
+            }
+        });
+        Task.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TaskActionPerformed(evt);
             }
         });
         jPanel4.add(Task, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
@@ -247,17 +266,46 @@ public class TASK extends javax.swing.JFrame {
     }//GEN-LAST:event_DATEActionPerformed
 
     private void TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TaskMouseClicked
-        config con = new config();
+    config con = new config();
         
-        
-      String DATE_CREATEDInput = DATE.getText().trim();
-      String DUE_DATEInput = DUE.getText().trim();
-      String TASKInput = TASK.getText().trim();
-      String DESCRIPTIONInput = DESCRIPTION.getText().trim();
-      
-      String sql = "INSERT INTO Task ( TASK, DESCRIPTION, DATE_CREATED, DUE_DATE, STATUS, REMARKS) VALUES (?,?,?,?,?,?)";
-      con.addRecord(sql, TASK.getText(), DATE.getText(), DUE.getText(), DESCRIPTION.getText(), "STAT", "REMARK");   
-      
+    String DATE_CREATEDInput = DATE.getText().trim();
+    String DUE_DATEInput = DUE.getText().trim();
+    String TASKInput = TASK.getText().trim();
+    String DESCRIPTIONInput = DESCRIPTION.getText().trim();
+    String createdBy = SessionManager.getInstance().getUserName();
+
+    if (TASKInput.isEmpty() || DATE_CREATEDInput.isEmpty() || DUE_DATEInput.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Please fill in all required fields.",
+            "Input Required", javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    String sql = "INSERT INTO Task (TASK, CREATEDBY, DESCRIPTION, DATE_CREATED, DUE_DATE, STATUS, REMARKS) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    try (Connection conn = config.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, TASKInput);
+        pstmt.setString(2, createdBy);
+        pstmt.setString(3, DESCRIPTIONInput);
+        pstmt.setString(4, DATE_CREATEDInput);
+        pstmt.setString(5, DUE_DATEInput);
+        pstmt.setString(6, "STAT");
+        pstmt.setString(7, "REMARK");
+
+        pstmt.executeUpdate();
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Task added successfully!",
+            "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Error saving task: " + e.getMessage(),
+            "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
        TASK ts = new TASK();
         ts.setVisible(true);
         this.dispose();
@@ -272,6 +320,10 @@ public class TASK extends javax.swing.JFrame {
         this.dispose();
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1MouseClicked
+
+    private void TaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TaskActionPerformed
 
     /**
      * @param args the command line arguments

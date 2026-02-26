@@ -23,26 +23,33 @@ public class view extends javax.swing.JFrame {
      * Loads the logged-in user's info from the session — no extra DB query needed.
      */
     private void loadUserProfile() {
-        SessionManager session = SessionManager.getInstance();
+    SessionManager session = SessionManager.getInstance();
 
-        // Guard: if no active session, kick back to login
-        if (!session.isLoggedIn()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "No active session found. Please log in again.",
-                "Session Expired",
-                javax.swing.JOptionPane.WARNING_MESSAGE);
-            new LOGin().setVisible(true);
-            this.dispose();
-            return;
-        }
-
-        // Populate labels from session data
-        lblStatusVal.setText(session.getUserName());
-        lblEmailVal.setText(session.getUserEmail());
-        lblTypeVal.setText(session.getUserType());
-        lblStatusVal.setText(session.getUserStatus());
-        lblIdVal.setText(String.valueOf(session.getUserId()));
+    if (!session.isLoggedIn()) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Access Denied! Please log in first.",
+            "Unauthorized", javax.swing.JOptionPane.WARNING_MESSAGE);
+        new LOGin().setVisible(true);
+        this.dispose();
+        return;
     }
+
+    String[] columns = {"FIELD", "INFO"};
+    Object[][] data = {
+        {"ID",     session.getUserId()},
+        {"NAME",   session.getUserName()},
+        {"EMAIL",  session.getUserEmail()},
+        {"TYPE",   session.getUserType()},
+        {"STATUS", session.getUserStatus()}
+    };
+
+    table.setModel(new javax.swing.table.DefaultTableModel(data, columns) {
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    });
+}
 
     
     
@@ -62,18 +69,8 @@ public class view extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
-        lblStatusVal = new javax.swing.JLabel();
-        lblEmailVal = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        lblTypeVal = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        lblIdVal = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        lblNameVal2 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -128,65 +125,21 @@ public class view extends javax.swing.JFrame {
         jPanel1.add(jPanel3);
         jPanel3.setBounds(420, 80, 180, 310);
 
-        lblStatusVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        lblStatusVal.setText("Status");
-        jPanel1.add(lblStatusVal);
-        lblStatusVal.setBounds(200, 270, 170, 40);
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(table);
 
-        lblEmailVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        lblEmailVal.setText("Email");
-        jPanel1.add(lblEmailVal);
-        lblEmailVal.setBounds(190, 160, 170, 23);
-
-        jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel4.setText("Password");
-        jPanel1.add(jLabel4);
-        jLabel4.setBounds(200, 240, 100, 23);
-
-        lblTypeVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        lblTypeVal.setText("Type");
-        jPanel1.add(lblTypeVal);
-        lblTypeVal.setBounds(200, 200, 180, 23);
-
-        jLabel6.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel6.setText("ID:");
-        jPanel1.add(jLabel6);
-        jLabel6.setBounds(140, 90, 30, 30);
-
-        jLabel7.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel7.setText("Email:");
-        jPanel1.add(jLabel7);
-        jLabel7.setBounds(110, 160, 150, 23);
-
-        jLabel8.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel8.setText("Type:");
-        jPanel1.add(jLabel8);
-        jLabel8.setBounds(110, 200, 150, 23);
-
-        jLabel9.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel9.setText("Status:");
-        jPanel1.add(jLabel9);
-        jLabel9.setBounds(100, 280, 60, 23);
-
-        lblIdVal.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        lblIdVal.setText("ID");
-        jPanel1.add(lblIdVal);
-        lblIdVal.setBounds(200, 90, 30, 30);
-
-        jLabel10.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel10.setText("Password:");
-        jPanel1.add(jLabel10);
-        jLabel10.setBounds(70, 240, 180, 23);
-
-        jLabel11.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        jLabel11.setText("Name:");
-        jPanel1.add(jLabel11);
-        jLabel11.setBounds(100, 120, 150, 30);
-
-        lblNameVal2.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
-        lblNameVal2.setText("Name");
-        jPanel1.add(lblNameVal2);
-        lblNameVal2.setBounds(200, 120, 170, 30);
+        jPanel1.add(jScrollPane1);
+        jScrollPane1.setBounds(10, 120, 400, 200);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -208,9 +161,10 @@ public class view extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
+       
         LOGin log = new LOGin();
-        log.setVisible(true); 
-        this.dispose();// TODO add your handling code here:
+        log.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -218,9 +172,9 @@ public class view extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        view v = new view ();
+        view v = new view();   // ← removed clearSession() from here
         v.setVisible(true);
-        this.dispose();// TODO add your handling code here:
+        this.dispose();
     }//GEN-LAST:event_jButton2MouseClicked
 
     /**
@@ -245,20 +199,10 @@ public class view extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JLabel lblEmailVal;
-    private javax.swing.JLabel lblIdVal;
-    private javax.swing.JLabel lblNameVal2;
-    private javax.swing.JLabel lblStatusVal;
-    private javax.swing.JLabel lblTypeVal;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 }

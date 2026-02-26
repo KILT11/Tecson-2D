@@ -5,6 +5,9 @@
  */
 package admin;
 
+import config.config;
+import main.LOGin;
+import config.SessionManager;
 /**
  *
  * @author USER29
@@ -15,9 +18,25 @@ public class viewTask extends javax.swing.JFrame {
      * Creates new form viewTask
      */
     public viewTask() {
-        initComponents();
+    initComponents();
+    if (!SessionManager.getInstance().isLoggedIn()) {
+        javax.swing.JOptionPane.showMessageDialog(null,
+            "Access Denied! Please log in first.",
+            "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+            LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
     }
-
+    displayTask();
+}
+    
+    void displayTask(){
+        config con = new config();
+        String sql = "SELECT * FROM Task";
+        con.displayData(sql, TaskTable);
+    
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -31,12 +50,14 @@ public class viewTask extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        home = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
+        home = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        TaskTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,16 +77,6 @@ public class viewTask extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        home.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home.setText("HOME");
-        home.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                homeMouseClicked(evt);
-            }
-        });
-        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 140, -1));
 
         user.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -92,32 +103,63 @@ public class viewTask extends javax.swing.JFrame {
 
         user1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        user1.setText("TASK");
+        user1.setText("CREATE TASK");
         user1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 user1MouseClicked(evt);
             }
         });
-        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 70, 30));
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 90, 30));
+
+        home.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        home.setText("HOME");
+        home.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                homeMouseClicked(evt);
+            }
+        });
+        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 140, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton1.setText("CREATED TASK");
+        jButton1.setText("TASK CREATED");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jButton1MouseClicked(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        jButton2.setText("Back");
+        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton2.setText("ADD");
+        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton2MouseClicked(evt);
+            }
+        });
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 100, -1, -1));
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 70, 30));
+
+        TaskTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(TaskTable);
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 370, 210));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -133,13 +175,8 @@ public class viewTask extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
-        admin ad = new admin();
-        ad.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_homeMouseClicked
 
     private void userMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userMouseClicked
         userView view = new userView();
@@ -174,6 +211,19 @@ public class viewTask extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
+        admin ad = new admin();
+        ad.setVisible(true);
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_homeMouseClicked
+
+    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+            TASK ts = new TASK();
+            ts.setVisible(true);
+            this.dispose();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -211,6 +261,7 @@ public class viewTask extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable TaskTable;
     private javax.swing.JLabel home;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -219,6 +270,7 @@ public class viewTask extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel user;
     private javax.swing.JLabel user1;
     // End of variables declaration//GEN-END:variables

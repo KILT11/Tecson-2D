@@ -17,9 +17,20 @@ public class admin extends javax.swing.JFrame {
     /**
      * Creates new form admin
      */
-    public admin() {
-        initComponents();
+   public admin() {
+    initComponents();
+    // Block access if not logged in or not Admin
+    if (!config.SessionManager.getInstance().isLoggedIn() || 
+        !"Admin".equals(config.SessionManager.getInstance().getUserType())) {
+        javax.swing.JOptionPane.showMessageDialog(null,
+            "Access Denied! Please log in first.",
+            "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+             LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
     }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -93,13 +104,13 @@ public class admin extends javax.swing.JFrame {
 
         user1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        user1.setText("TASK");
+        user1.setText("CREATE TASK");
         user1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 user1MouseClicked(evt);
             }
         });
-        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 70, 30));
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 90, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
@@ -121,9 +132,11 @@ public class admin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-            LOGin log = new LOGin();
-            log.setVisible(true);
-            this.dispose();
+            
+    
+    LOGin log = new LOGin();
+    log.setVisible(true);
+    this.dispose();
     }//GEN-LAST:event_jLabel4MouseClicked
 
     private void jLabel4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseEntered

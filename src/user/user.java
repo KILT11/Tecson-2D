@@ -6,7 +6,7 @@
 package user;
 
 import main.LOGin;
-
+import config.SessionManager;
 /**
  *
  * @author USER27
@@ -17,7 +17,19 @@ public class user extends javax.swing.JFrame {
      * Creates new form user
      */
     public user() {
-        initComponents();
+       initComponents();
+
+        // ✅ CORRECT - uses SessionManager directly, NOT config.SessionManager
+        if (!SessionManager.getInstance().isLoggedIn() ||
+            !"Admin".equals(SessionManager.getInstance().getUserType())) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Access Denied! Please log in first.",
+                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+            LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
+        }
     }
 
     /**
@@ -111,7 +123,7 @@ public class user extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+       
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked

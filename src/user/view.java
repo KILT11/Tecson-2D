@@ -36,11 +36,12 @@ public class view extends javax.swing.JFrame {
 
     String[] columns = {"FIELD", "INFO"};
     Object[][] data = {
-        {"ID",     session.getUserId()},
-        {"NAME",   session.getUserName()},
-        {"EMAIL",  session.getUserEmail()},
-        {"TYPE",   session.getUserType()},
-        {"STATUS", session.getUserStatus()}
+        {"ID",       session.getUserId()},
+        {"NAME",     session.getUserName()},
+        {"EMAIL",    session.getUserEmail()},
+        {"PASSWORD", session.getUserPassword()},
+        {"TYPE",     session.getUserType()},
+        {"STATUS",   session.getUserStatus()}
     };
 
     table.setModel(new javax.swing.table.DefaultTableModel(data, columns) {
@@ -71,6 +72,7 @@ public class view extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -120,7 +122,7 @@ public class view extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 100, 23));
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, 100, 23));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(420, 80, 180, 310);
@@ -140,6 +142,17 @@ public class view extends javax.swing.JFrame {
 
         jPanel1.add(jScrollPane1);
         jScrollPane1.setBounds(10, 120, 400, 200);
+
+        jButton3.setBackground(new java.awt.Color(0, 102, 204));
+        jButton3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton3.setText("UPDATE");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3);
+        jButton3.setBounds(330, 90, 83, 27);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -177,6 +190,15 @@ public class view extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton2MouseClicked
 
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        UpdateProfile up = new UpdateProfile();
+        up.setVisible(true);
+        this.dispose();
+
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -198,6 +220,7 @@ public class view extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

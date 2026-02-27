@@ -8,6 +8,11 @@ package admin;
 import config.config;
 import main.LOGin;
 import config.SessionManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author USER29
@@ -37,6 +42,69 @@ public class viewTask extends javax.swing.JFrame {
         con.displayData(sql, TaskTable);
     
     }
+    
+    
+    void searchTask(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            displayTask(); // If empty, show all
+            return;
+        }
+
+        String sql = "SELECT * FROM Task WHERE "
+                   + "TASK LIKE ? OR "
+                   + "DESCRIPTION LIKE ? OR "
+                   + "STATUS LIKE ? OR "
+                   + "REMARKS LIKE ? OR "
+                   + "DUE_DATE LIKE ?";
+
+        String pattern = "%" + keyword.trim() + "%";
+
+        try (Connection conn = config.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, pattern);
+            pstmt.setString(2, pattern);
+            pstmt.setString(3, pattern);
+            pstmt.setString(4, pattern);
+            pstmt.setString(5, pattern);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                // Build column headers
+                int colCount = rs.getMetaData().getColumnCount();
+                Vector<String> columns = new Vector<>();
+                for (int i = 1; i <= colCount; i++) {
+                    columns.add(rs.getMetaData().getColumnName(i));
+                }
+
+                // Build rows
+                Vector<Vector<Object>> rows = new Vector<>();
+                while (rs.next()) {
+                    Vector<Object> row = new Vector<>();
+                    for (int i = 1; i <= colCount; i++) {
+                        row.add(rs.getObject(i));
+                    }
+                    rows.add(row);
+                }
+
+                DefaultTableModel model = new DefaultTableModel(rows, columns) {
+                    @Override
+                    public boolean isCellEditable(int row, int col) { return false; }
+                };
+                TaskTable.setModel(model);
+
+                if (rows.isEmpty()) {
+                    javax.swing.JOptionPane.showMessageDialog(this,
+                        "No tasks found for: " + keyword.trim(),
+                        "No Results", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Search Error: " + e.getMessage(),
+                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -46,6 +114,8 @@ public class viewTask extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -55,9 +125,20 @@ public class viewTask extends javax.swing.JFrame {
         user1 = new javax.swing.JLabel();
         home = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        BACK = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         TaskTable = new javax.swing.JTable();
+        Delete = new javax.swing.JButton();
+        Search = new javax.swing.JButton();
+        SEARCH = new javax.swing.JTextField();
+        UPDATE = new javax.swing.JButton();
+
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(jList1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -86,7 +167,7 @@ public class viewTask extends javax.swing.JFrame {
                 userMouseClicked(evt);
             }
         });
-        jPanel3.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 70, 30));
+        jPanel3.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 70, 30));
 
         jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -99,7 +180,7 @@ public class viewTask extends javax.swing.JFrame {
                 jLabel4MouseEntered(evt);
             }
         });
-        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 254, 60, 30));
+        jPanel3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 260, 60, 30));
 
         user1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -109,7 +190,7 @@ public class viewTask extends javax.swing.JFrame {
                 user1MouseClicked(evt);
             }
         });
-        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 90, 30));
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 90, 30));
 
         home.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -119,10 +200,11 @@ public class viewTask extends javax.swing.JFrame {
                 homeMouseClicked(evt);
             }
         });
-        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 10, 140, 30));
+        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 30, 140, 30));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, 120, 310));
 
+        jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jButton1.setText("TASK CREATED");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -130,21 +212,27 @@ public class viewTask extends javax.swing.JFrame {
                 jButton1MouseClicked(evt);
             }
         });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
 
-        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton2.setText("ADD");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
+        BACK.setBackground(new java.awt.Color(0, 102, 204));
+        BACK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        BACK.setText("ADD");
+        BACK.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
+                BACKMouseClicked(evt);
             }
         });
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        BACK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                BACKActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, 70, 30));
+        jPanel1.add(BACK, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 70, -1));
 
         TaskTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -159,7 +247,45 @@ public class viewTask extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(TaskTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 370, 210));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 440, 190));
+
+        Delete.setBackground(new java.awt.Color(0, 102, 204));
+        Delete.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        Delete.setText("DELETE");
+        Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteActionPerformed(evt);
+            }
+        });
+        jPanel1.add(Delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 90, -1, -1));
+
+        Search.setBackground(new java.awt.Color(0, 102, 204));
+        Search.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        Search.setText("Search");
+        Search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SearchActionPerformed(evt);
+            }
+        });
+        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 340, -1, -1));
+
+        SEARCH.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        SEARCH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SEARCHActionPerformed(evt);
+            }
+        });
+        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, 220, 30));
+
+        UPDATE.setBackground(new java.awt.Color(0, 102, 153));
+        UPDATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        UPDATE.setText("UPDATE");
+        UPDATE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UPDATEActionPerformed(evt);
+            }
+        });
+        jPanel1.add(UPDATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 90, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -185,6 +311,7 @@ public class viewTask extends javax.swing.JFrame {
     }//GEN-LAST:event_userMouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        SessionManager.getInstance().clearSession();
         LOGin log = new LOGin();
         log.setVisible(true);
         this.dispose();
@@ -208,9 +335,13 @@ public class viewTask extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1MouseClicked
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void BACKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BACKActionPerformed
+            TASK ts = new TASK();
+            ts.setVisible(true);
+            this.dispose();
+
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_BACKActionPerformed
 
     private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
         admin ad = new admin();
@@ -218,12 +349,84 @@ public class viewTask extends javax.swing.JFrame {
         this.dispose();        // TODO add your handling code here:
     }//GEN-LAST:event_homeMouseClicked
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
+    private void BACKMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_BACKMouseClicked
             TASK ts = new TASK();
             ts.setVisible(true);
             this.dispose();
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2MouseClicked
+    }//GEN-LAST:event_BACKMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteActionPerformed
+            try {
+        int selectedRow = TaskTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Please select a user to delete!");
+            return;
+        }
+
+        String currentId = TaskTable.getValueAt(selectedRow, 0).toString();
+        String username  = TaskTable.getValueAt(selectedRow, 1).toString();
+
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
+            "Are you sure you want to delete: " + username + "?",
+            "Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
+
+        String sql = "DELETE FROM Task WHERE TASK_ID = ?";
+
+        try (java.sql.Connection conn = config.connectDB();
+             java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, currentId);
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "User \"" + username + "\" deleted successfully!");
+
+                displayTask(); // Refresh table
+            }
+
+        } catch (java.sql.SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Database Error: " + e.getMessage());
+        }
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Error: " + e.getMessage());
+    }   
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DeleteActionPerformed
+
+    private void SEARCHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEARCHActionPerformed
+
+         searchTask(SEARCH.getText());
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SEARCHActionPerformed
+
+    private void SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchActionPerformed
+        searchTask(SEARCH.getText());
+
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_SearchActionPerformed
+
+    private void UPDATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPDATEActionPerformed
+        
+
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_UPDATEActionPerformed
 
     /**
      * @param args the command line arguments
@@ -253,6 +456,25 @@ public class viewTask extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new viewTask().setVisible(true);
@@ -261,16 +483,22 @@ public class viewTask extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BACK;
+    private javax.swing.JButton Delete;
+    private javax.swing.JTextField SEARCH;
+    private javax.swing.JButton Search;
     private javax.swing.JTable TaskTable;
+    private javax.swing.JButton UPDATE;
     private javax.swing.JLabel home;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel user;
     private javax.swing.JLabel user1;
     // End of variables declaration//GEN-END:variables

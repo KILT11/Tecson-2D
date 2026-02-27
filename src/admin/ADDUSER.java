@@ -95,7 +95,7 @@ public class ADDUSER extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("ADD USER");
+        jLabel1.setText("ADMIN DASHBOARD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 80));
@@ -173,7 +173,7 @@ public class ADDUSER extends javax.swing.JFrame {
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
         
-         if (name.getText().trim().isEmpty() || email.getText().trim().isEmpty() || password.getText().isEmpty()) {
+        if (name.getText().trim().isEmpty() || email.getText().trim().isEmpty() || password.getText().isEmpty()) {
         JOptionPane.showMessageDialog(null, 
             "All fields are required!",
             "Validation Error",

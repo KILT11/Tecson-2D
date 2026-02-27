@@ -199,6 +199,7 @@ public class LOGin extends javax.swing.JFrame {
                         rs.getInt("acc_id"),
                         rs.getString("name"),
                         rs.getString("email"),
+                         rs.getString("password"), 
                         rs.getString("type"),
                         rs.getString("status")
                     );

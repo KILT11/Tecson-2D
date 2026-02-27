@@ -178,6 +178,7 @@ public class TASK extends javax.swing.JFrame {
 
         jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 290, 90));
 
+        Task.setBackground(new java.awt.Color(0, 102, 204));
         Task.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         Task.setText("CONFIRM");
         Task.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -192,6 +193,7 @@ public class TASK extends javax.swing.JFrame {
         });
         jPanel4.add(Task, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
 
+        jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jButton1.setText("CREATED TASK");
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -233,6 +235,7 @@ public class TASK extends javax.swing.JFrame {
     }//GEN-LAST:event_userMouseClicked
 
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
+        SessionManager.getInstance().clearSession();
         LOGin log = new LOGin();
         log.setVisible(true);
         this.dispose();
@@ -334,6 +337,26 @@ public class TASK extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(TASK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(TASK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(TASK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(TASK.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

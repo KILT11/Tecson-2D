@@ -21,7 +21,7 @@ public class user extends javax.swing.JFrame {
 
         // ✅ CORRECT - uses SessionManager directly, NOT config.SessionManager
         if (!SessionManager.getInstance().isLoggedIn() ||
-            !"Admin".equals(SessionManager.getInstance().getUserType())) {
+            !"User".equals(SessionManager.getInstance().getUserType())) {
             javax.swing.JOptionPane.showMessageDialog(null,
                 "Access Denied! Please log in first.",
                 "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -96,7 +96,7 @@ public class user extends javax.swing.JFrame {
                 jButton1ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, 130, 23));
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 260, 130, 23));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
@@ -146,6 +146,25 @@ public class user extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(user.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(user.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(user.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(user.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+            try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());

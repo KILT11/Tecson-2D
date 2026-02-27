@@ -8,6 +8,11 @@ package admin;
 import config.config;
 import main.LOGin;
 import config.SessionManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Vector;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author USER27
@@ -39,6 +44,64 @@ public class userView extends javax.swing.JFrame {
         String sql = "SELECT * FROM ACCOUNTS";
         con.displayData(sql, usertable);
     
+    }
+    
+    void searchUser(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            displayUser(); // If empty, show all
+            return;
+        }
+
+        String sql = "SELECT * FROM ACCOUNTS WHERE "
+                   + "name LIKE ? OR "
+                   + "email LIKE ? OR "
+                   + "type LIKE ? OR "
+                   + "status LIKE ?";
+
+        String pattern = "%" + keyword.trim() + "%";
+
+        try (Connection conn = config.connectDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, pattern);
+            pstmt.setString(2, pattern);
+            pstmt.setString(3, pattern);
+            pstmt.setString(4, pattern);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                int colCount = rs.getMetaData().getColumnCount();
+                Vector<String> columns = new Vector<>();
+                for (int i = 1; i <= colCount; i++) {
+                    columns.add(rs.getMetaData().getColumnName(i));
+                }
+
+                Vector<Vector<Object>> rows = new Vector<>();
+                while (rs.next()) {
+                    Vector<Object> row = new Vector<>();
+                    for (int i = 1; i <= colCount; i++) {
+                        row.add(rs.getObject(i));
+                    }
+                    rows.add(row);
+                }
+
+                DefaultTableModel model = new DefaultTableModel(rows, columns) {
+                    @Override
+                    public boolean isCellEditable(int row, int col) { return false; }
+                };
+                usertable.setModel(model);
+
+                if (rows.isEmpty()) {
+                    javax.swing.JOptionPane.showMessageDialog(null,
+                        "No users found for: " + keyword.trim(),
+                        "No Results", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+
+        } catch (Exception e) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Search Error: " + e.getMessage(),
+                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     private boolean isPasswordSecure(String password) {
@@ -86,7 +149,6 @@ public class userView extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
@@ -98,6 +160,8 @@ public class userView extends javax.swing.JFrame {
         UPDATE = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         DELETE = new javax.swing.JLabel();
+        SEARCH = new javax.swing.JTextField();
+        Search = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,7 +174,7 @@ public class userView extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Century Gothic", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("VIEW USER ");
+        jLabel1.setText("ADMIN DASHBOARD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 80));
@@ -132,16 +196,6 @@ public class userView extends javax.swing.JFrame {
             }
         });
         jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 30));
-
-        jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("USER");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
-            }
-        });
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 70, 30));
 
         jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -174,7 +228,7 @@ public class userView extends javax.swing.JFrame {
                 user1MouseClicked(evt);
             }
         });
-        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, 90, 30));
+        jPanel3.add(user1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 90, 30));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
@@ -246,6 +300,24 @@ public class userView extends javax.swing.JFrame {
 
         jPanel1.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 90, 80, 30));
 
+        SEARCH.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        SEARCH.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SEARCHActionPerformed(evt);
+            }
+        });
+        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, 220, 30));
+
+        Search.setBackground(new java.awt.Color(0, 102, 204));
+        Search.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        Search.setText("Search");
+        Search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SearchActionPerformed(evt);
+            }
+        });
+        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 340, -1, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -265,7 +337,9 @@ public class userView extends javax.swing.JFrame {
 
    
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
-            LOGin log = new LOGin();
+            
+        SessionManager.getInstance().clearSession();
+        LOGin log = new LOGin();
             log.setVisible(true);
             this.dispose();
     }//GEN-LAST:event_jLabel4MouseClicked
@@ -361,12 +435,6 @@ public class userView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_UPDATEMouseClicked
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-            userView view = new userView();
-            view.setVisible(true);
-            this.dispose();// TODO add your handling code here:
-    }//GEN-LAST:event_jLabel3MouseClicked
-
     private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
             admin ad = new admin();
             ad.setVisible(true);
@@ -380,7 +448,7 @@ public class userView extends javax.swing.JFrame {
     }//GEN-LAST:event_userMouseClicked
 
     private void DELETEMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DELETEMouseClicked
-            try {
+        try {
         int selectedRow = usertable.getSelectedRow();
 
         if (selectedRow == -1) {
@@ -442,6 +510,19 @@ public class userView extends javax.swing.JFrame {
 // TODO add your handling code here:
     }//GEN-LAST:event_ADDUSERMouseClicked
 
+    private void SEARCHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SEARCHActionPerformed
+
+        searchUser(SEARCH.getText());
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SEARCHActionPerformed
+
+    private void SearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchActionPerformed
+        searchUser(SEARCH.getText());
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_SearchActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -451,6 +532,25 @@ public class userView extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(userView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(userView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(userView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(userView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -480,10 +580,11 @@ public class userView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ADDUSER;
     private javax.swing.JLabel DELETE;
+    private javax.swing.JTextField SEARCH;
+    private javax.swing.JButton Search;
     private javax.swing.JLabel UPDATE;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

@@ -139,6 +139,16 @@ public void updateRecord(String sql, Object... values) {
     }
 }
 
+    public static class SessionManager {
+
+        public static Object getInstance() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        public SessionManager() {
+        }
+    }
+
 
 
 }

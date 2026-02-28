@@ -124,7 +124,6 @@ public class viewTask extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
         home = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         BACK = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         TaskTable = new javax.swing.JTable();
@@ -132,6 +131,8 @@ public class viewTask extends javax.swing.JFrame {
         Search = new javax.swing.JButton();
         SEARCH = new javax.swing.JTextField();
         UPDATE = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        ASSIGN = new javax.swing.JButton();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -204,21 +205,6 @@ public class viewTask extends javax.swing.JFrame {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, 120, 310));
 
-        jButton1.setBackground(new java.awt.Color(0, 102, 204));
-        jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton1.setText("TASK CREATED");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, -1, -1));
-
         BACK.setBackground(new java.awt.Color(0, 102, 204));
         BACK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         BACK.setText("ADD");
@@ -267,7 +253,7 @@ public class viewTask extends javax.swing.JFrame {
                 SearchActionPerformed(evt);
             }
         });
-        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 340, -1, -1));
+        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 340, -1, -1));
 
         SEARCH.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         SEARCH.addActionListener(new java.awt.event.ActionListener() {
@@ -275,9 +261,9 @@ public class viewTask extends javax.swing.JFrame {
                 SEARCHActionPerformed(evt);
             }
         });
-        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 340, 220, 30));
+        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 220, 30));
 
-        UPDATE.setBackground(new java.awt.Color(0, 102, 153));
+        UPDATE.setBackground(new java.awt.Color(0, 102, 204));
         UPDATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         UPDATE.setText("UPDATE");
         UPDATE.addActionListener(new java.awt.event.ActionListener() {
@@ -286,6 +272,31 @@ public class viewTask extends javax.swing.JFrame {
             }
         });
         jPanel1.add(UPDATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 90, -1, -1));
+
+        jButton1.setBackground(new java.awt.Color(0, 102, 204));
+        jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton1.setText("TASK CREATED");
+        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton1MouseClicked(evt);
+            }
+        });
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, -1, -1));
+
+        ASSIGN.setBackground(new java.awt.Color(0, 102, 204));
+        ASSIGN.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        ASSIGN.setText("ASSING TO");
+        ASSIGN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ASSIGNActionPerformed(evt);
+            }
+        });
+        jPanel1.add(ASSIGN, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -422,11 +433,44 @@ public class viewTask extends javax.swing.JFrame {
     }//GEN-LAST:event_SearchActionPerformed
 
     private void UPDATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UPDATEActionPerformed
-        
+        // --- FIX: Get the selected row and pass data to UpdateTask ---
+        int selectedRow = TaskTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Please select a task from the table first, then click UPDATE.",
+                "No Task Selected", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Read values from the selected row
+        // Columns: TASK_ID(0), CREATEDBY(1), TASK(2), DESCRIPTION(3),
+        //          DATE_CREATED(4), DUE_DATE(5), STATUS(6), REMARKS(7)
+        int    taskId      = Integer.parseInt(TaskTable.getValueAt(selectedRow, 0).toString());
+        String dateCreated = TaskTable.getValueAt(selectedRow, 4) != null ? TaskTable.getValueAt(selectedRow, 4).toString() : "";
+        String dueDate     = TaskTable.getValueAt(selectedRow, 5) != null ? TaskTable.getValueAt(selectedRow, 5).toString() : "";
+        String task        = TaskTable.getValueAt(selectedRow, 2) != null ? TaskTable.getValueAt(selectedRow, 2).toString() : "";
+        String description = TaskTable.getValueAt(selectedRow, 3) != null ? TaskTable.getValueAt(selectedRow, 3).toString() : "";
+        String status      = TaskTable.getValueAt(selectedRow, 6) != null ? TaskTable.getValueAt(selectedRow, 6).toString() : "";
+        String remarks     = TaskTable.getValueAt(selectedRow, 7) != null ? TaskTable.getValueAt(selectedRow, 7).toString() : "";
+
+        // Open UpdateTask and pre-fill it with this row's data
+        UpdateTask ut = new UpdateTask (taskId, dateCreated, dueDate, task, description, status, remarks);
+        ut.setVisible(true);
+        this.dispose();
 
 
 // TODO add your handling code here:
     }//GEN-LAST:event_UPDATEActionPerformed
+
+    private void ASSIGNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ASSIGNActionPerformed
+        
+        userView uv = new userView();
+        uv.setVisible(true);
+        this.dispose();
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ASSIGNActionPerformed
 
     /**
      * @param args the command line arguments
@@ -472,9 +516,7 @@ public class viewTask extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new viewTask().setVisible(true);
@@ -483,6 +525,7 @@ public class viewTask extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ASSIGN;
     private javax.swing.JButton BACK;
     private javax.swing.JButton Delete;
     private javax.swing.JTextField SEARCH;

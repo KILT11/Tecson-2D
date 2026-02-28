@@ -17,11 +17,32 @@ import main.LOGin;
  */
 public class UpdateTask extends javax.swing.JFrame {
 
+    private int taskId;
+
     /**
      * Creates new form UpdateTask
      */
     public UpdateTask() {
         initComponents();
+        checkAccess();
+    }
+    public UpdateTask(int taskId, String dateCreated, String dueDate,
+                      String task, String description, String status, String remarks) {
+        initComponents();
+        checkAccess();
+
+        // Store the task ID so CONFIRM knows which row to UPDATE
+        this.taskId = taskId;
+
+        // Pre-fill all fields with the existing task data
+        DATE.setText(dateCreated);
+        DUE.setText(dueDate);
+        TASK.setText(task);
+        DESCRIPTION.setText(description);
+        STATUS.setText(status);
+        REMARKS.setText(remarks);
+    }
+    private void checkAccess() {
         if (!SessionManager.getInstance().isLoggedIn() ||
             !"Admin".equals(SessionManager.getInstance().getUserType())) {
             javax.swing.JOptionPane.showMessageDialog(null,
@@ -30,10 +51,8 @@ public class UpdateTask extends javax.swing.JFrame {
             SessionManager.getInstance().clearSession();
             new LOGin().setVisible(true);
             this.dispose();
-            return;
         }
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,13 +70,17 @@ public class UpdateTask extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        UP_DATE = new javax.swing.JTextField();
-        UP_DUE = new javax.swing.JTextField();
-        UP_TASK = new javax.swing.JTextField();
+        DATE = new javax.swing.JTextField();
+        DUE = new javax.swing.JTextField();
+        TASK = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
-        UP_DESCRIPTION = new javax.swing.JTextArea();
+        DESCRIPTION = new javax.swing.JTextArea();
         Task = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        REMARKS = new javax.swing.JTextField();
+        STATUS = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -90,39 +113,39 @@ public class UpdateTask extends javax.swing.JFrame {
         jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 100, 70, 20));
 
         jLabel8.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jLabel8.setText("DATE:");
-        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 70, 20));
+        jLabel8.setText("REMARKS:");
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, 70, 20));
 
-        UP_DATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        UP_DATE.addActionListener(new java.awt.event.ActionListener() {
+        DATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        DATE.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UP_DATEActionPerformed(evt);
+                DATEActionPerformed(evt);
             }
         });
-        jPanel4.add(UP_DATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 60, 240, -1));
+        jPanel4.add(DATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 60, 190, -1));
 
-        UP_DUE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        UP_DUE.addActionListener(new java.awt.event.ActionListener() {
+        DUE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        DUE.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UP_DUEActionPerformed(evt);
+                DUEActionPerformed(evt);
             }
         });
-        jPanel4.add(UP_DUE, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 100, 240, -1));
+        jPanel4.add(DUE, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 100, 190, -1));
 
-        UP_TASK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        UP_TASK.addActionListener(new java.awt.event.ActionListener() {
+        TASK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        TASK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UP_TASKActionPerformed(evt);
+                TASKActionPerformed(evt);
             }
         });
-        jPanel4.add(UP_TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 240, -1));
+        jPanel4.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 140, 190, -1));
 
-        UP_DESCRIPTION.setColumns(20);
-        UP_DESCRIPTION.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        UP_DESCRIPTION.setRows(5);
-        jScrollPane1.setViewportView(UP_DESCRIPTION);
+        DESCRIPTION.setColumns(20);
+        DESCRIPTION.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        DESCRIPTION.setRows(5);
+        jScrollPane1.setViewportView(DESCRIPTION);
 
-        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 290, 90));
+        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 430, 90));
 
         Task.setBackground(new java.awt.Color(0, 102, 204));
         Task.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -154,7 +177,31 @@ public class UpdateTask extends javax.swing.JFrame {
         });
         jPanel4.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, -1, -1));
 
-        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 90, 420, 280));
+        REMARKS.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        REMARKS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                REMARKSActionPerformed(evt);
+            }
+        });
+        jPanel4.add(REMARKS, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 100, 110, -1));
+
+        STATUS.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        STATUS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                STATUSActionPerformed(evt);
+            }
+        });
+        jPanel4.add(STATUS, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 110, -1));
+
+        jLabel10.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabel10.setText("STATUS:");
+        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 70, 20));
+
+        jLabel12.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabel12.setText("DATE:");
+        jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 70, 20));
+
+        jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 560, 280));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,32 +217,31 @@ public class UpdateTask extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void UP_DATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UP_DATEActionPerformed
+    private void DATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DATEActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_UP_DATEActionPerformed
+    }//GEN-LAST:event_DATEActionPerformed
 
-    private void UP_DUEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UP_DUEActionPerformed
+    private void DUEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DUEActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_UP_DUEActionPerformed
+    }//GEN-LAST:event_DUEActionPerformed
 
-    private void UP_TASKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UP_TASKActionPerformed
+    private void TASKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TASKActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_UP_TASKActionPerformed
+    }//GEN-LAST:event_TASKActionPerformed
 
     private void TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TaskMouseClicked
-        String DATE_CREATEDInput  = UP_DATE.getText().trim();
-        String DUE_DATEInput      = UP_DUE.getText().trim();
-        String TASKInput          = UP_TASK.getText().trim();
-        String DESCRIPTIONInput   = UP_DESCRIPTION.getText().trim();
+        
+        String DATE_CREATEDInput = DATE.getText().trim();
+        String DUE_DATEInput     = DUE.getText().trim();
+        String TASKInput         = TASK.getText().trim();
+        String DESCRIPTIONInput  = DESCRIPTION.getText().trim();
+        String STATUSInput       = STATUS.getText().trim();
+        String REMARKSInput      = REMARKS.getText().trim();
 
-        // Use session for CREATEDBY (INTEGER) and creator name for display
-        SessionManager session    = SessionManager.getInstance();
-        int    createdById        = session.getUserId();    // INTEGER — matches DB column type
-        String createdByName      = session.getUserName();  // for display only
-
-        // Validation — all required fields must be filled
+        // Validation
         if (TASKInput.isEmpty() || DATE_CREATEDInput.isEmpty() || DUE_DATEInput.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this,
                 "Please fill in all required fields (Task, Date Created, Due Date).",
@@ -205,40 +251,53 @@ public class UpdateTask extends javax.swing.JFrame {
 
         // Confirm before saving
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
-            "Would you like to save this task?",
-            "Confirm", javax.swing.JOptionPane.YES_NO_OPTION,
+            "Would you like to save the changes to this task?",
+            "Confirm Update", javax.swing.JOptionPane.YES_NO_OPTION,
             javax.swing.JOptionPane.QUESTION_MESSAGE);
 
         if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
 
-        String sql = "INSERT INTO Task (CREATEDBY, TASK, DESCRIPTION, DATE_CREATED, DUE_DATE, STATUS, REMARKS) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        // --- FIX: Use UPDATE instead of INSERT ---
+        String sql = "UPDATE Task SET "
+                   + "TASK = ?, "
+                   + "DESCRIPTION = ?, "
+                   + "DATE_CREATED = ?, "
+                   + "DUE_DATE = ?, "
+                   + "STATUS = ?, "
+                   + "REMARKS = ? "
+                   + "WHERE TASK_ID = ?";
 
         try (Connection conn = config.connectDB();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, createdById);          // INTEGER — correct type for CREATEDBY
-            pstmt.setString(2, TASKInput);
-            pstmt.setString(3, DESCRIPTIONInput);
-            pstmt.setString(4, DATE_CREATEDInput);
-            pstmt.setString(5, DUE_DATEInput);
-            pstmt.setString(6, "Pending");         // meaningful default STATUS
-            pstmt.setString(7, "None");            // meaningful default REMARKS
+            pstmt.setString(1, TASKInput);
+            pstmt.setString(2, DESCRIPTIONInput);
+            pstmt.setString(3, DATE_CREATEDInput);
+            pstmt.setString(4, DUE_DATEInput);
+            pstmt.setString(5, STATUSInput);
+            pstmt.setString(6, REMARKSInput);
+            pstmt.setInt(7, taskId);   // WHERE TASK_ID = ? — binds the correct row
+              // WHERE clause — update the correct row
 
-            pstmt.executeUpdate();
+            int rowsUpdated = pstmt.executeUpdate();
 
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Task saved successfully!\nCreated by: " + createdByName,
-                "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            if (rowsUpdated > 0) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "Task updated successfully!",
+                    "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                    "No task was updated. The task ID may not exist.",
+                    "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
+            }
 
-            // Navigate back to task list
-            viewTask vt = new viewTask();
-            vt.setVisible(true);
+            viewTask vew = new viewTask();
+            vew.setVisible(true);
             this.dispose();
 
         } catch (Exception e) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                "Error saving task: " + e.getMessage(),
+                "Error updating task: " + e.getMessage(),
                 "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
 
@@ -261,6 +320,14 @@ public class UpdateTask extends javax.swing.JFrame {
         vt.setVisible(true);
         this.dispose();     // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void REMARKSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REMARKSActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_REMARKSActionPerformed
+
+    private void STATUSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_STATUSActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_STATUSActionPerformed
 
     /**
      * @param args the command line arguments
@@ -290,25 +357,6 @@ public class UpdateTask extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-       try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UpdateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UpdateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UpdateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UpdateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -325,24 +373,26 @@ public class UpdateTask extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(UpdateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new admin().setVisible(true);
+                new UpdateTask().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField DATE;
+    private javax.swing.JTextArea DESCRIPTION;
+    private javax.swing.JTextField DUE;
+    private javax.swing.JTextField REMARKS;
+    private javax.swing.JTextField STATUS;
+    private javax.swing.JTextField TASK;
     private javax.swing.JButton Task;
-    private javax.swing.JTextField UP_DATE;
-    private javax.swing.JTextArea UP_DESCRIPTION;
-    private javax.swing.JTextField UP_DUE;
-    private javax.swing.JTextField UP_TASK;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

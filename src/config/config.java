@@ -10,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import net.proteanit.sql.DbUtils;
 
 /**
@@ -138,6 +140,10 @@ public void updateRecord(String sql, Object... values) {
         System.out.println("Error updating record: " + e.getMessage());
     }
 }
+
+    public void displayData(String sql, JTextField DATE, JTextField DUE, JTextField TASK, JTextArea DESCRIPTION) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     public static class SessionManager {
 

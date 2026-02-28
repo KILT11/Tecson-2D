@@ -55,6 +55,19 @@ public class UpdateProfile extends javax.swing.JFrame {
         }
         return false;
     }
+    private boolean isPasswordSecure(String password) {
+    // Customize these requirements as needed:
+    boolean hasMinLength = password.length() >= 8;
+    boolean hasUpperCase = password.matches(".*[A-Z].*");
+    boolean hasLowerCase = password.matches(".*[a-z].*");
+    boolean hasNumber = password.matches(".*\\d.*");
+    boolean hasSpecialChar = password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*");
+    boolean hasNoSpaces = !password.contains(" ");
+    
+    // All requirements must be met
+    return hasMinLength && hasUpperCase && hasLowerCase && 
+           hasNumber && hasSpecialChar && hasNoSpaces;
+}
     
     private void loadCurrentData() {
         SessionManager session = SessionManager.getInstance();
@@ -189,7 +202,8 @@ public class UpdateProfile extends javax.swing.JFrame {
                 "Input Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
+        
+      
         // Check if email is already taken by another account
         if (isEmailTaken(newEmail)) {
             JOptionPane.showMessageDialog(this,
@@ -199,6 +213,22 @@ public class UpdateProfile extends javax.swing.JFrame {
             Email.requestFocus();
             return;
         }
+          if (!isPasswordSecure(newPassword)) {
+        JOptionPane.showMessageDialog(null, 
+            "Insecure Password!\n\n" +
+            "Your password must meet these requirements:\n" +
+            "• At least 8 characters long\n" +
+            "• At least one uppercase letter (A-Z)\n" +
+            "• At least one lowercase letter (a-z)\n" +
+            "• At least one number (0-9)\n" +
+            "• At least one special character (!@#$%^&*)\n\n" +
+            "Please create a stronger password.",
+            "Password Validation Failed",
+            JOptionPane.ERROR_MESSAGE);
+            Password.setText("");
+            Password.requestFocus();
+        return;
+    }
 
         int confirm = JOptionPane.showConfirmDialog(this,
             "Would you like to continue?",

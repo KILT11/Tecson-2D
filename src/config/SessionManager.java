@@ -61,6 +61,8 @@ public class SessionManager {
         this.loggedIn     = false;
         System.out.println("[Session] Cleared.");
     }
+    
+    
 
     // Getters
     public boolean isLoggedIn()      { return loggedIn;      }

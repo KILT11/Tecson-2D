@@ -124,6 +124,7 @@ public class viewTask extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
         home = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         BACK = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         TaskTable = new javax.swing.JTable();
@@ -203,7 +204,17 @@ public class viewTask extends javax.swing.JFrame {
         });
         jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, 30, 140, 30));
 
-        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 80, 120, 310));
+        jLabel3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("VIEW ASSIGNED TASK");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, 160, -1));
+
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 80, 150, 310));
 
         BACK.setBackground(new java.awt.Color(0, 102, 204));
         BACK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -218,7 +229,7 @@ public class viewTask extends javax.swing.JFrame {
                 BACKActionPerformed(evt);
             }
         });
-        jPanel1.add(BACK, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 70, -1));
+        jPanel1.add(BACK, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 70, -1));
 
         TaskTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -233,7 +244,7 @@ public class viewTask extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(TaskTable);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 440, 190));
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 410, 170));
 
         Delete.setBackground(new java.awt.Color(0, 102, 204));
         Delete.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -243,7 +254,7 @@ public class viewTask extends javax.swing.JFrame {
                 DeleteActionPerformed(evt);
             }
         });
-        jPanel1.add(Delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 90, -1, -1));
+        jPanel1.add(Delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 90, -1, -1));
 
         Search.setBackground(new java.awt.Color(0, 102, 204));
         Search.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -253,7 +264,7 @@ public class viewTask extends javax.swing.JFrame {
                 SearchActionPerformed(evt);
             }
         });
-        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 340, -1, -1));
+        jPanel1.add(Search, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 340, -1, -1));
 
         SEARCH.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         SEARCH.addActionListener(new java.awt.event.ActionListener() {
@@ -261,7 +272,7 @@ public class viewTask extends javax.swing.JFrame {
                 SEARCHActionPerformed(evt);
             }
         });
-        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 340, 220, 30));
+        jPanel1.add(SEARCH, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 340, 220, 30));
 
         UPDATE.setBackground(new java.awt.Color(0, 102, 204));
         UPDATE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -271,7 +282,7 @@ public class viewTask extends javax.swing.JFrame {
                 UPDATEActionPerformed(evt);
             }
         });
-        jPanel1.add(UPDATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 90, -1, -1));
+        jPanel1.add(UPDATE, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 90, -1, -1));
 
         jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -296,7 +307,7 @@ public class viewTask extends javax.swing.JFrame {
                 ASSIGNActionPerformed(evt);
             }
         });
-        jPanel1.add(ASSIGN, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 340, -1, -1));
+        jPanel1.add(ASSIGN, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -464,13 +475,32 @@ public class viewTask extends javax.swing.JFrame {
     }//GEN-LAST:event_UPDATEActionPerformed
 
     private void ASSIGNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ASSIGNActionPerformed
-        
-        userView uv = new userView();
-        uv.setVisible(true);
+      int selectedRow = TaskTable.getSelectedRow();
+
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Please select a task from the table first, then click ASSIGN TO.",
+                "No Task Selected", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Pass the TASK_ID (column 0) to ASSIGNED
+        int taskId = Integer.parseInt(TaskTable.getValueAt(selectedRow, 0).toString());
+
+        ASSIGNED assigned = new ASSIGNED(taskId);
+        assigned.setVisible(true);
         this.dispose();
 
         // TODO add your handling code here:
     }//GEN-LAST:event_ASSIGNActionPerformed
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+        viewAssigned ASS = new viewAssigned();
+        ASS.setVisible(true);
+        this.dispose();
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel3MouseClicked
 
     /**
      * @param args the command line arguments
@@ -535,6 +565,7 @@ public class viewTask extends javax.swing.JFrame {
     private javax.swing.JLabel home;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;

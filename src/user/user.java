@@ -47,6 +47,7 @@ public class user extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        TASK = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -98,6 +99,16 @@ public class user extends javax.swing.JFrame {
         });
         jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 260, 130, 23));
 
+        TASK.setBackground(new java.awt.Color(0, 102, 204));
+        TASK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        TASK.setText("TASK");
+        TASK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TASKActionPerformed(evt);
+            }
+        });
+        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 100, -1));
+
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
 
@@ -135,6 +146,15 @@ public class user extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void TASKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TASKActionPerformed
+        userTASK T = new userTASK();
+        T.setVisible(true);
+        this.dispose();
+        
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_TASKActionPerformed
 
     /**
      * @param args the command line arguments
@@ -191,6 +211,7 @@ public class user extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton TASK;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

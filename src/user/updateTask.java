@@ -36,21 +36,37 @@ public class updateTask extends javax.swing.JFrame {
         }
         checkAccess();
     }
-     public updateTask(int taskId, String dateCreated, String dueDate,
-                      String task, String description, String status, String remarks) {
+    
+    public updateTask(int taskId, String dateCreated, String task,
+                      String description, String createdBy,
+                      String status, String dueDate, String role) {
         initComponents();
         checkAccess();
 
-        // Store the task ID so CONFIRM knows which row to UPDATE
         this.taskId = taskId;
 
-        // Pre-fill all fields with the existing task data
+        // Pre-fill all fields
         DATE.setText(dateCreated);
         DUE.setText(dueDate);
         TASK.setText(task);
         DESCRIPTION.setText(description);
         STATUS.setText(status);
-        
+
+        // Lock all fields except STATUS
+        DATE.setEditable(false);
+        DUE.setEditable(false);
+        TASK.setEditable(false);
+        DESCRIPTION.setEditable(false);
+
+        // Grey background for read-only fields
+        java.awt.Color readOnly = new java.awt.Color(220, 220, 220);
+        DATE.setBackground(readOnly);
+        DUE.setBackground(readOnly);
+        TASK.setBackground(readOnly);
+        DESCRIPTION.setBackground(readOnly);
+
+        // Green border on STATUS - only editable field
+        STATUS.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 0), 2));
     }
     private void checkAccess() {
         if (!SessionManager.getInstance().isLoggedIn() ||
@@ -213,6 +229,7 @@ public class updateTask extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void DATEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DATEActionPerformed
@@ -236,10 +253,10 @@ public class updateTask extends javax.swing.JFrame {
         String STATUSInput       = STATUS.getText().trim();
        
 
-        // Validation
-        if (TASKInput.isEmpty() || DATE_CREATEDInput.isEmpty() || DUE_DATEInput.isEmpty()) {
+        // Only STATUS can be changed by the user
+        if (STATUSInput.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this,
-                "Please fill in all required fields (Task, Date Created, Due Date).",
+                "Status cannot be empty.",
                 "Input Required", javax.swing.JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -252,27 +269,14 @@ public class updateTask extends javax.swing.JFrame {
 
         if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
 
-        // --- FIX: Use UPDATE instead of INSERT ---
-        String sql = "UPDATE Task SET "
-        + "TASK = ?, "
-        + "DESCRIPTION = ?, "
-        + "DATE_CREATED = ?, "
-        + "DUE_DATE = ?, "
-        + "STATUS = ?, "
-        + "REMARKS = ? "
-        + "WHERE TASK_ID = ?";
+        // Only STATUS is updated - all other fields are read-only for users
+        String sql = "UPDATE Task SET STATUS = ? WHERE TASK_ID = ?";
 
         try (Connection conn = config.connectDB();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, TASKInput);
-            pstmt.setString(2, DESCRIPTIONInput);
-            pstmt.setString(3, DATE_CREATEDInput);
-            pstmt.setString(4, DUE_DATEInput);
-            pstmt.setString(5, STATUSInput);
-          
-            pstmt.setInt(7, taskId);   // WHERE TASK_ID = ? — binds the correct row
-            // WHERE clause — update the correct row
+            pstmt.setString(1, STATUSInput);
+            pstmt.setInt(2, taskId);
 
             int rowsUpdated = pstmt.executeUpdate();
 
@@ -302,71 +306,7 @@ public class updateTask extends javax.swing.JFrame {
     private void TaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskActionPerformed
 
 
-        String DATE_CREATEDInput = DATE.getText().trim();
-        String DUE_DATEInput     = DUE.getText().trim();
-        String TASKInput         = TASK.getText().trim();
-        String DESCRIPTIONInput  = DESCRIPTION.getText().trim();
-        String STATUSInput       = STATUS.getText().trim();
-        
-
-        // Validation
-        if (TASKInput.isEmpty() || DATE_CREATEDInput.isEmpty() || DUE_DATEInput.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Please fill in all required fields (Task, Date Created, Due Date).",
-                "Input Required", javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Confirm before saving
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
-            "Would you like to save the changes to this task?",
-            "Confirm Update", javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE);
-
-        if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
-
-        // --- FIX: Use UPDATE instead of INSERT ---
-        String sql = "UPDATE Task SET "
-                   + "TASK = ?, "
-                   + "DESCRIPTION = ?, "
-                   + "DATE_CREATED = ?, "
-                   + "DUE_DATE = ?, "
-                   + "STATUS = ?, "
-                   + "REMARKS = ? "
-                   + "WHERE TASK_ID = ?";
-
-        try (Connection conn = config.connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, TASKInput);
-            pstmt.setString(2, DESCRIPTIONInput);
-            pstmt.setString(3, DATE_CREATEDInput);
-            pstmt.setString(4, DUE_DATEInput);
-            pstmt.setString(5, STATUSInput);
-            pstmt.setInt(7, taskId);   // WHERE TASK_ID = ? — binds the correct row
-              // WHERE clause — update the correct row
-
-            int rowsUpdated = pstmt.executeUpdate();
-
-            if (rowsUpdated > 0) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "Task updated successfully!",
-                    "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "No task was updated. The task ID may not exist.",
-                    "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
-            }
-
-            userTASK vew = new   userTASK();
-            vew.setVisible(true);
-            this.dispose();
-
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Error updating task: " + e.getMessage(),
-                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
+       
 
 
         // TODO add your handling code here:
@@ -378,7 +318,11 @@ public class updateTask extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-             // TODO add your handling code here:
+            userTASK back = new userTASK();
+            back.setVisible(true);
+            this.dispose();
+        
+// TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void STATUSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_STATUSActionPerformed

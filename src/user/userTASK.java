@@ -29,55 +29,62 @@ public class userTASK extends javax.swing.JFrame {
     }
     
     // ── Load only tasks assigned to the current user ────────────────────────
-    private void displayAssignedTasks() {
-        // Get the current user's ID from the session
-        int currentUserId = SessionManager.getInstance().getUserId();
+   private void displayAssignedTasks() {
+    int currentUserId = SessionManager.getInstance().getUserId();
 
-        // SQL query joining the assignment table with the task details
-        // Filters by ASSINGEDTO to ensure users only see their own tasks
-        String sql = "SELECT T.TK_ID, T.TK_TITLE, T.TK_DESCRIPTION, A.ROLE "
-                   + "FROM \"ASSIGNED TASK\" A "
-                   + "JOIN TASK T ON A.TASKASSIGNED = T.TK_ID "
-                   + "WHERE A.ASSINGEDTO = ?";
+    // ✅ Fixed column names to match actual DB schema:
+    // Task table: TASK_ID, TASK, DESCRIPTION, STATUS, DUE_DATE
+    // ASSIGNED TASK table: ASSINGEDTO, TASKASSIGNED, ROLE
+    String sql = "SELECT T.TASK_ID, T.DATE_CREATED, T.TASK, T.DESCRIPTION, T.CREATEDBY, T.STATUS, T.DUE_DATE, A.ROLE "
+               + "FROM \"ASSIGNED TASK\" A "
+               + "JOIN Task T ON A.TASKASSIGNED = T.TASK_ID "
+               + "WHERE A.ASSINGEDTO = ?";
 
-        try (Connection conn = config.connectDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, currentUserId);
-            
-            try (ResultSet rs = pstmt.executeQuery()) {
-                // Set up the table columns
-                Vector<String> columns = new Vector<>();
-                columns.add("Task ID");
-                columns.add("Title");
-                columns.add("Description");
-                columns.add("Role");
+    try (Connection conn = config.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                Vector<Vector<Object>> data = new Vector<>();
-                while (rs.next()) {
-                    Vector<Object> row = new Vector<>();
-                    row.add(rs.getInt("TK_ID"));
-                    row.add(rs.getString("TK_TITLE"));
-                    row.add(rs.getString("TK_DESCRIPTION"));
-                    row.add(rs.getString("ROLE")); // From the assignment table
-                    data.add(row);
-                }
+        pstmt.setInt(1, currentUserId);
 
-                DefaultTableModel model = new DefaultTableModel(data, columns) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) {
-                        return false; // Make table read-only
-                    }
-                };
-                TaskTable.setModel(model);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            Vector<String> columns = new Vector<>();
+            columns.add("Task ID");
+            columns.add("Date Created");
+            columns.add("Title");
+            columns.add("Description");
+            columns.add("Created By");
+            columns.add("Status");
+            columns.add("Due Date");
+            columns.add("Role");
+
+            Vector<Vector<Object>> data = new Vector<>();
+            while (rs.next()) {
+                Vector<Object> row = new Vector<>();
+                row.add(rs.getInt("TASK_ID"));
+                row.add(rs.getInt("DATE_CREATED"));
+                row.add(rs.getString("TASK"));
+                row.add(rs.getString("DESCRIPTION"));
+                row.add(rs.getInt("CREATEDBY"));
+                row.add(rs.getString("STATUS"));
+                row.add(rs.getString("DUE_DATE"));
+                row.add(rs.getString("ROLE"));
+                data.add(row);
             }
 
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Error loading assigned tasks: " + e.getMessage(),
-                "Database Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            DefaultTableModel model = new DefaultTableModel(data, columns) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
+            TaskTable.setModel(model);
         }
+
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Error loading assigned tasks: " + e.getMessage(),
+            "Database Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -176,7 +183,7 @@ public class userTASK extends javax.swing.JFrame {
         jScrollPane1.setViewportView(TaskTable);
 
         jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(20, 140, 360, 190);
+        jScrollPane1.setBounds(10, 140, 390, 190);
 
         update.setBackground(new java.awt.Color(0, 102, 204));
         update.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -233,7 +240,30 @@ public class userTASK extends javax.swing.JFrame {
     }//GEN-LAST:event_TASKActionPerformed
 
     private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
-        updateTask tsk = new updateTask ();
+        int selectedRow = TaskTable.getSelectedRow();
+
+        // ── Validation: user must select a row first ─────────────────────────
+        if (selectedRow == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Please select a task from the table first before clicking UPDATE.",
+                "No Task Selected", javax.swing.JOptionPane.WARNING_MESSAGE);
+            return; // stop here, do not open updateTask
+        }
+
+        // ── Read all column values from the selected row ──────────────────────
+        // Column order: 0=Task ID, 1=Date Created, 2=Title, 3=Description,
+        //               4=Created By, 5=Status, 6=Due Date, 7=Role
+        int    taskId      = (int)    TaskTable.getValueAt(selectedRow, 0);
+        String dateCreated = String.valueOf(TaskTable.getValueAt(selectedRow, 1));
+        String task        = (String) TaskTable.getValueAt(selectedRow, 2);
+        String description = (String) TaskTable.getValueAt(selectedRow, 3);
+        String createdBy   = String.valueOf(TaskTable.getValueAt(selectedRow, 4));
+        String status      = (String) TaskTable.getValueAt(selectedRow, 5);
+        String dueDate     = (String) TaskTable.getValueAt(selectedRow, 6);
+        String role        = (String) TaskTable.getValueAt(selectedRow, 7);
+
+        // Open updateTask with the selected task's data pre-filled
+        updateTask tsk = new updateTask(taskId, dateCreated, task, description, createdBy, status, dueDate, role);
         tsk.setVisible(true);
         this.dispose();
 

@@ -5,83 +5,20 @@
  */
 package user;
 
-import config.SessionManager;
-import config.config;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import main.LOGin;
-
 /**
  *
- * @author Administrator
+ * @author USER31
  */
-public class updateTask extends javax.swing.JFrame {
-
-   private int taskId;
+public class viewTask extends javax.swing.JFrame {
 
     /**
-     * Creates new form UpdateTask
+     * Creates new form viewTask
      */
-    public updateTask() {
+    public viewTask() {
         initComponents();
-        if (!SessionManager.getInstance().isLoggedIn() ||
-            !"User".equals(SessionManager.getInstance().getUserType())) {
-            javax.swing.JOptionPane.showMessageDialog(null,
-                "Access Denied! Please log in first.",
-                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
-            LOGin log = new LOGin();   // ← goes directly to LOGin
-            log.setVisible(true);
-            this.dispose();
-            return;
-        }
-        checkAccess();
-    }
-    
-    public updateTask(int taskId, String dateCreated, String task,
-                      String description, String createdBy,
-                      String status, String dueDate, String role) {
-        initComponents();
-        checkAccess();
-
-        this.taskId = taskId;
-
-        // Pre-fill all fields
-        DATE.setText(dateCreated);
-        DUE.setText(dueDate);
-        TASK.setText(task);
-        DESCRIPTION.setText(description);
-        STATUS.setText(status);
-       
-
-        // Lock all fields except STATUS
-        DATE.setEditable(false);
-        DUE.setEditable(false);
-        TASK.setEditable(false);
-        DESCRIPTION.setEditable(false);
         
-
-        // Grey background for read-only fields
-        java.awt.Color readOnly = new java.awt.Color(220, 220, 220);
-        DATE.setBackground(readOnly);
-        DUE.setBackground(readOnly);
-        TASK.setBackground(readOnly);
-        DESCRIPTION.setBackground(readOnly);
-       
-
-        // Green border on STATUS - only editable field
-        STATUS.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 153, 0), 2));
     }
-    private void checkAccess() {
-        if (!SessionManager.getInstance().isLoggedIn() ||
-            !"User".equals(SessionManager.getInstance().getUserType())) {
-            javax.swing.JOptionPane.showMessageDialog(null,
-                "Access Denied! Please log in first.",
-                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
-            SessionManager.getInstance().clearSession();
-            new LOGin().setVisible(true);
-            this.dispose();
-        }
-    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -103,7 +40,6 @@ public class updateTask extends javax.swing.JFrame {
         TASK = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         DESCRIPTION = new javax.swing.JTextArea();
-        Task = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         STATUS = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
@@ -170,21 +106,6 @@ public class updateTask extends javax.swing.JFrame {
 
         jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 430, 90));
 
-        Task.setBackground(new java.awt.Color(0, 102, 204));
-        Task.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        Task.setText("CONFIRM");
-        Task.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TaskMouseClicked(evt);
-            }
-        });
-        Task.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TaskActionPerformed(evt);
-            }
-        });
-        jPanel4.add(Task, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, -1, -1));
-
         jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jButton1.setText("BACK");
@@ -247,85 +168,17 @@ public class updateTask extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_TASKActionPerformed
 
-    private void TaskMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TaskMouseClicked
-
-        String DATE_CREATEDInput = DATE.getText().trim();
-        String DUE_DATEInput     = DUE.getText().trim();
-        String TASKInput         = TASK.getText().trim();
-        String DESCRIPTIONInput  = DESCRIPTION.getText().trim();
-        String STATUSInput       = STATUS.getText().trim();
-       
-
-        // Only STATUS can be changed by the user
-        if (STATUSInput.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Status cannot be empty.",
-                "Input Required", javax.swing.JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Confirm before saving
-        int confirm = javax.swing.JOptionPane.showConfirmDialog(this,
-            "Would you like to save the changes to this task?",
-            "Confirm Update", javax.swing.JOptionPane.YES_NO_OPTION,
-            javax.swing.JOptionPane.QUESTION_MESSAGE);
-
-        if (confirm != javax.swing.JOptionPane.YES_OPTION) return;
-
-        // Only STATUS is updated - all other fields are read-only for users
-        String sql = "UPDATE Task SET STATUS = ? WHERE TASK_ID = ?";
-
-        try (Connection conn = config.connectDB();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, STATUSInput);
-            pstmt.setInt(2, taskId);
-
-            int rowsUpdated = pstmt.executeUpdate();
-
-            if (rowsUpdated > 0) {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "Task updated successfully!",
-                    "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this,
-                    "No task was updated. The task ID may not exist.",
-                    "Warning", javax.swing.JOptionPane.WARNING_MESSAGE);
-            }
-
-            userTASK vew = new userTASK();
-            vew.setVisible(true);
-            this.dispose();
-
-        } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this,
-                "Error updating task: " + e.getMessage(),
-                "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }
-
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TaskMouseClicked
-
-    private void TaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskActionPerformed
-
-
-       
-
-
-        // TODO add your handling code here:
-    }//GEN-LAST:event_TaskActionPerformed
-
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-        
+
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-            userTASK back = new userTASK();
-            back.setVisible(true);
-            this.dispose();
-        
-// TODO add your handling code here:
+        userTASK back = new userTASK();
+        back.setVisible(true);
+        this.dispose();
+
+        // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void STATUSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_STATUSActionPerformed
@@ -349,58 +202,20 @@ public class updateTask extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(updateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(updateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(updateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(updateTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-       try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UpdateProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(viewTask.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UpdateProfile().setVisible(true);
+                new viewTask().setVisible(true);
             }
         });
     }
@@ -411,7 +226,6 @@ public class updateTask extends javax.swing.JFrame {
     private javax.swing.JTextField DUE;
     private javax.swing.JTextField STATUS;
     private javax.swing.JTextField TASK;
-    private javax.swing.JButton Task;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;

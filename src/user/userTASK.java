@@ -25,6 +25,16 @@ public class userTASK extends javax.swing.JFrame {
      */
   public userTASK() {
         initComponents();
+        if (!SessionManager.getInstance().isLoggedIn() ||
+            !"User".equals(SessionManager.getInstance().getUserType())) {
+            javax.swing.JOptionPane.showMessageDialog(null,
+                "Access Denied! Please log in first.",
+                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+            LOGin log = new LOGin();   // ← goes directly to LOGin
+            log.setVisible(true);
+            this.dispose();
+            return;
+        }
         displayAssignedTasks();
     }
     
@@ -105,6 +115,7 @@ public class userTASK extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         TaskTable = new javax.swing.JTable();
         update = new javax.swing.JButton();
+        VIEW = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -194,7 +205,18 @@ public class userTASK extends javax.swing.JFrame {
             }
         });
         jPanel1.add(update);
-        update.setBounds(273, 100, 100, 27);
+        update.setBounds(300, 100, 100, 30);
+
+        VIEW.setBackground(new java.awt.Color(0, 102, 204));
+        VIEW.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        VIEW.setText("VIEW");
+        VIEW.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                VIEWActionPerformed(evt);
+            }
+        });
+        jPanel1.add(VIEW);
+        VIEW.setBounds(220, 100, 73, 30);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -271,6 +293,14 @@ public class userTASK extends javax.swing.JFrame {
 // TODO add your handling code here:
     }//GEN-LAST:event_updateActionPerformed
 
+    private void VIEWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VIEWActionPerformed
+        
+        viewTask vew = new viewTask();
+        vew.setVisible(true);
+        this.dispose();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_VIEWActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -310,6 +340,7 @@ public class userTASK extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton TASK;
     private javax.swing.JTable TaskTable;
+    private javax.swing.JButton VIEW;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

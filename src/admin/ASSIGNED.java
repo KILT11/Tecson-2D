@@ -232,11 +232,11 @@ public class ASSIGNED extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        HOME = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         usertable = new javax.swing.JTable();
         SEARCH = new javax.swing.JTextField();
@@ -263,21 +263,6 @@ public class ASSIGNED extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("HOME");
-        jLabel2.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseDragged(java.awt.event.MouseEvent evt) {
-                jLabel2MouseDragged(evt);
-            }
-        });
-        jLabel2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel2MouseClicked(evt);
-            }
-        });
-        jPanel3.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 150, 30));
 
         jLabel4.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -321,6 +306,16 @@ public class ASSIGNED extends javax.swing.JFrame {
             }
         });
         jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+
+        HOME.setBackground(new java.awt.Color(0, 102, 204));
+        HOME.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        HOME.setText("HOME");
+        HOME.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HOMEActionPerformed(evt);
+            }
+        });
+        jPanel3.add(HOME, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 80, 150, 310));
 
@@ -396,18 +391,6 @@ public class ASSIGNED extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jLabel2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseDragged
-        admin ad = new admin();
-        ad.setVisible(true);
-        this.dispose();// TODO add your handling code here:
-    }//GEN-LAST:event_jLabel2MouseDragged
-
-    private void jLabel2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel2MouseClicked
-        admin ad = new admin();
-        ad.setVisible(true);
-        this.dispose();           // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel2MouseClicked
-
     private void jLabel4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel4MouseClicked
 
         SessionManager.getInstance().clearSession();
@@ -466,6 +449,12 @@ public class ASSIGNED extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel3MouseClicked
 
+    private void HOMEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HOMEActionPerformed
+        admin ad = new admin();
+        ad.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_HOMEActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -513,12 +502,12 @@ public class ASSIGNED extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ASSIGNCONFIRM;
+    private javax.swing.JButton HOME;
     private javax.swing.JLabel R;
     private javax.swing.JTextField ROLE;
     private javax.swing.JTextField SEARCH;
     private javax.swing.JButton Search;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;

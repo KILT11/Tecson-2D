@@ -48,11 +48,11 @@ public class TASK extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        home = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        HOME = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
@@ -84,16 +84,6 @@ public class TASK extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        home.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home.setText("HOME");
-        home.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                homeMouseClicked(evt);
-            }
-        });
-        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 140, -1));
 
         user.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -137,6 +127,16 @@ public class TASK extends javax.swing.JFrame {
             }
         });
         jPanel3.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 140, -1, -1));
+
+        HOME.setBackground(new java.awt.Color(0, 102, 204));
+        HOME.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        HOME.setText("HOME");
+        HOME.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HOMEActionPerformed(evt);
+            }
+        });
+        jPanel3.add(HOME, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 80, 140, 310));
 
@@ -232,12 +232,6 @@ public class TASK extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
-        admin ad = new admin();
-        ad.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_homeMouseClicked
 
     private void userMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_userMouseClicked
         userView view = new userView();
@@ -347,6 +341,12 @@ public class TASK extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel7MouseClicked
 
+    private void HOMEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HOMEActionPerformed
+        admin ad = new admin();
+        ad.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_HOMEActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -407,9 +407,9 @@ public class TASK extends javax.swing.JFrame {
     private javax.swing.JTextField DATE;
     private javax.swing.JTextArea DESCRIPTION;
     private javax.swing.JTextField DUE;
+    private javax.swing.JButton HOME;
     private javax.swing.JTextField TASK;
     private javax.swing.JButton Task;
-    private javax.swing.JLabel home;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;

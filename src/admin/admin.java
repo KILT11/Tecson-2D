@@ -19,6 +19,7 @@ public class admin extends javax.swing.JFrame {
      */
    public admin() {
     initComponents();
+     
     // Block access if not logged in or not Admin
     if (!config.SessionManager.getInstance().isLoggedIn() || 
         !"Admin".equals(config.SessionManager.getInstance().getUserType())) {
@@ -31,6 +32,9 @@ public class admin extends javax.swing.JFrame {
             return;
     }
 }
+   
+  
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,12 +48,13 @@ public class admin extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        PROFILE = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        home = new javax.swing.JLabel();
         user = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         user1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        HOME = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -63,22 +68,22 @@ public class admin extends javax.swing.JFrame {
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("ADMIN DASHBOARD");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 290, 60));
+
+        PROFILE.setBackground(new java.awt.Color(0, 102, 153));
+        PROFILE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        PROFILE.setText("PROFILE");
+        PROFILE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PROFILEActionPerformed(evt);
+            }
+        });
+        jPanel2.add(PROFILE, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 110, 80));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 80));
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        home.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        home.setText("HOME");
-        home.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                homeMouseClicked(evt);
-            }
-        });
-        jPanel3.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 20, 140, -1));
 
         user.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         user.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -121,7 +126,17 @@ public class admin extends javax.swing.JFrame {
                 jLabel3MouseClicked(evt);
             }
         });
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 140, -1, -1));
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, -1, -1));
+
+        HOME.setBackground(new java.awt.Color(0, 102, 204));
+        HOME.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        HOME.setText("HOME");
+        HOME.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HOMEActionPerformed(evt);
+            }
+        });
+        jPanel3.add(HOME, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, -1));
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 80, 160, 310));
 
@@ -160,12 +175,6 @@ public class admin extends javax.swing.JFrame {
             this.dispose();
     }//GEN-LAST:event_userMouseClicked
 
-    private void homeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_homeMouseClicked
-        admin ad = new admin();
-        ad.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_homeMouseClicked
-
     private void user1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_user1MouseClicked
         TASK ts = new TASK();
         ts.setVisible(true);
@@ -180,6 +189,18 @@ public class admin extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void HOMEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HOMEActionPerformed
+        admin ad = new admin();
+        ad.setVisible(true);
+        this.dispose();  
+    }//GEN-LAST:event_HOMEActionPerformed
+
+    private void PROFILEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PROFILEActionPerformed
+        AdminProfile prof = new AdminProfile ();
+        prof.setVisible(true);
+        this.dispose();        // TODO add your handling code here:
+    }//GEN-LAST:event_PROFILEActionPerformed
 
     /**
      * @param args the command line arguments
@@ -209,25 +230,17 @@ public class admin extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        try {
+       try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(admin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(admin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(admin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        } catch (Exception ex) {
             java.util.logging.Logger.getLogger(admin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
+ 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new admin().setVisible(true);
@@ -236,7 +249,8 @@ public class admin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel home;
+    private javax.swing.JButton HOME;
+    private javax.swing.JButton PROFILE;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

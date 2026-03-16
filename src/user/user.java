@@ -48,6 +48,7 @@ public class user extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         TASK = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -107,7 +108,17 @@ public class user extends javax.swing.JFrame {
                 TASKActionPerformed(evt);
             }
         });
-        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 100, -1));
+        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 130, -1));
+
+        jButton3.setBackground(new java.awt.Color(0, 153, 204));
+        jButton3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton3.setText("PRINT");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 130, -1));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
@@ -155,6 +166,15 @@ public class user extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_TASKActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        TRY T = new TRY();
+        T.setVisible(true);
+        this.dispose();
+
+
+// TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -214,6 +234,7 @@ public class user extends javax.swing.JFrame {
     private javax.swing.JButton TASK;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

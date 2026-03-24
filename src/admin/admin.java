@@ -5,6 +5,8 @@
  */
 package admin;
 
+import java.io.File;
+import javax.swing.ImageIcon;
 import main.LOGin;
 
 
@@ -19,21 +21,45 @@ public class admin extends javax.swing.JFrame {
      */
    public admin() {
     initComponents();
-     
-    // Block access if not logged in or not Admin
-    if (!config.SessionManager.getInstance().isLoggedIn() || 
+    if (!config.SessionManager.getInstance().isLoggedIn() ||
         !"Admin".equals(config.SessionManager.getInstance().getUserType())) {
         javax.swing.JOptionPane.showMessageDialog(null,
             "Access Denied! Please log in first.",
             "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
-             LOGin log = new LOGin();   // ← goes directly to LOGin
-            log.setVisible(true);
-            this.dispose();
-            return;
+        LOGin log = new LOGin(); log.setVisible(true); this.dispose(); return;
+    }
+    loadProfileImage();
+}
+ 
+private void loadProfileImage() {
+    ImageIcon icon = null;
+    java.net.URL url = getClass().getResource("/image/Profile.png");
+    if (url != null) icon = new ImageIcon(url);
+    if (icon == null || icon.getIconWidth() <= 0) {
+        String[] paths = {
+            System.getProperty("user.dir") + "/src/image/Profile.png",
+            System.getProperty("user.dir") + "\\src\\image\\Profile.png",
+            "src/image/Profile.png"
+        };
+        for (String p : paths) {
+            File f = new File(p);
+            if (f.exists()) { icon = new ImageIcon(f.getAbsolutePath()); break; }
+        }
+    }
+    if (icon != null && icon.getIconWidth() > 0) {
+        java.awt.Image scaled = icon.getImage().getScaledInstance(100, 70, java.awt.Image.SCALE_SMOOTH);
+        profilehere.setIcon(new ImageIcon(scaled));
+        profilehere.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        profilehere.setVerticalAlignment(javax.swing.SwingConstants.CENTER);
+        profilehere.setText("");
+    } else {
+        profilehere.setText("👤");
+        profilehere.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
+        profilehere.setForeground(java.awt.Color.WHITE);
+        profilehere.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        System.err.println("Profile.png not found. Working dir: " + System.getProperty("user.dir"));
     }
 }
-   
-  
    
 
     /**
@@ -48,7 +74,7 @@ public class admin extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        PROFILE = new javax.swing.JButton();
+        profilehere = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         user = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -70,15 +96,12 @@ public class admin extends javax.swing.JFrame {
         jLabel1.setText("ADMIN DASHBOARD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 10, 290, 60));
 
-        PROFILE.setBackground(new java.awt.Color(0, 102, 153));
-        PROFILE.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        PROFILE.setText("PROFILE");
-        PROFILE.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PROFILEActionPerformed(evt);
+        profilehere.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profilehereMouseClicked(evt);
             }
         });
-        jPanel2.add(PROFILE, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 110, 80));
+        jPanel2.add(profilehere, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 110, 80));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 80));
 
@@ -196,11 +219,12 @@ public class admin extends javax.swing.JFrame {
         this.dispose();  
     }//GEN-LAST:event_HOMEActionPerformed
 
-    private void PROFILEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PROFILEActionPerformed
+    private void profilehereMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profilehereMouseClicked
         AdminProfile prof = new AdminProfile ();
         prof.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_PROFILEActionPerformed
+        this.dispose();    
+        // TODO add your handling code here:
+    }//GEN-LAST:event_profilehereMouseClicked
 
     /**
      * @param args the command line arguments
@@ -230,33 +254,24 @@ public class admin extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-       try {
+      try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+                if ("Nimbus".equals(info.getName())) { javax.swing.UIManager.setLookAndFeel(info.getClassName()); break; }
             }
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(admin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
- 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new admin().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new admin().setVisible(true));
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton HOME;
-    private javax.swing.JButton PROFILE;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel profilehere;
     private javax.swing.JLabel user;
     private javax.swing.JLabel user1;
     // End of variables declaration//GEN-END:variables

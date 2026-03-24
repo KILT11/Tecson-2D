@@ -23,6 +23,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import config.SessionManager;
+import config.config;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 /**
  *
  * @author USER31
@@ -202,7 +206,25 @@ public class TRY extends javax.swing.JFrame {
                 "Save failed: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
- 
+ private void savePrintRecord(String textContent, File imageFile) {
+    String sql = "INSERT INTO PRINTED_DOCUMENTS (USER_ID, TEXT_CONTENT, IMAGE_PATH, HAS_IMAGE) VALUES (?, ?, ?, ?)";
+    
+    try (Connection conn = config.connectDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        SessionManager session = SessionManager.getInstance();
+        pstmt.setInt(1, session.getUserId());
+        pstmt.setString(2, textContent.isEmpty() ? null : textContent);
+        pstmt.setString(3, imageFile != null ? imageFile.getAbsolutePath() : null);
+        pstmt.setBoolean(4, imageFile != null);
+        
+        pstmt.executeUpdate();
+        System.out.println("[Print record saved to database]");
+        
+    } catch (Exception e) {
+        System.out.println("Error saving print record: " + e.getMessage());
+    }
+}
  
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -318,9 +340,9 @@ public class TRY extends javax.swing.JFrame {
         printDocument();
     }//GEN-LAST:event_PRINTActionPerformed
  
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         uploadImage();        // TODO add your handling code here:
-    }//GEN-LAST:event_PRINTActionPerformed
+    }                                     
 
     private void uploadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uploadActionPerformed
          uploadImage();  // TODO add your handling code here:

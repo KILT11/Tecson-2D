@@ -5,6 +5,8 @@
  */
 package user;
 
+import config.SessionManager;
+
 /**
  *
  * @author USER31
@@ -14,11 +16,46 @@ public class viewTask extends javax.swing.JFrame {
     /**
      * Creates new form viewTask
      */
-    public viewTask() {
+   public viewTask() {
         initComponents();
-        
+        setRemarksPermission();
     }
-
+    
+    // ✅ PARAMETERIZED CONSTRUCTOR - with task data (for opening from userTASK)
+    public viewTask(String date, String dueDate, String task, String description, 
+                    String status, String remarks) {
+        initComponents();
+        setRemarksPermission();
+        
+        // Populate fields with data
+        DATE.setText(date);
+        DUE.setText(dueDate);
+        TASK.setText(task);
+        DESCRIPTION.setText(description);
+        STATUS.setText(status);
+        REMARKS.setText(remarks);
+    }
+    
+    // Method to set REMARKS field editable only for Admins
+    private void setRemarksPermission() {
+        config.SessionManager session = config.SessionManager.getInstance();
+        
+        if (!session.isLoggedIn()) {
+            return;
+        }
+        
+        boolean isAdmin = "Admin".equals(session.getUserType());
+        
+        REMARKS.setEditable(isAdmin);
+        REMARKS.setEnabled(isAdmin);
+        
+        // Visual feedback
+        if (!isAdmin) {
+            REMARKS.setBackground(new java.awt.Color(220, 220, 220)); // Gray for read-only
+        } else {
+            REMARKS.setBackground(java.awt.Color.WHITE); // White for editable
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,6 +81,8 @@ public class viewTask extends javax.swing.JFrame {
         STATUS = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        REMARKS = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -127,7 +166,7 @@ public class viewTask extends javax.swing.JFrame {
                 STATUSActionPerformed(evt);
             }
         });
-        jPanel4.add(STATUS, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 60, 110, -1));
+        jPanel4.add(STATUS, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 60, 110, -1));
 
         jLabel12.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel12.setText("DATE:");
@@ -136,6 +175,17 @@ public class viewTask extends javax.swing.JFrame {
         jLabel11.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
         jLabel11.setText("STATUS:");
         jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 60, 70, 20));
+
+        jLabel2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jLabel2.setText("REMARKS:");
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 110, -1, -1));
+
+        REMARKS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                REMARKSActionPerformed(evt);
+            }
+        });
+        jPanel4.add(REMARKS, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 100, 110, 30));
 
         jPanel1.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 560, 280));
 
@@ -185,6 +235,10 @@ public class viewTask extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_STATUSActionPerformed
 
+    private void REMARKSActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_REMARKSActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_REMARKSActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -224,12 +278,14 @@ public class viewTask extends javax.swing.JFrame {
     private javax.swing.JTextField DATE;
     private javax.swing.JTextArea DESCRIPTION;
     private javax.swing.JTextField DUE;
+    private javax.swing.JTextField REMARKS;
     private javax.swing.JTextField STATUS;
     private javax.swing.JTextField TASK;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;

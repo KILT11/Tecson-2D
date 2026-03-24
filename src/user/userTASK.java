@@ -42,10 +42,8 @@ public class userTASK extends javax.swing.JFrame {
    private void displayAssignedTasks() {
     int currentUserId = SessionManager.getInstance().getUserId();
 
-    // ✅ Fixed column names to match actual DB schema:
-    // Task table: TASK_ID, TASK, DESCRIPTION, STATUS, DUE_DATE
-    // ASSIGNED TASK table: ASSINGEDTO, TASKASSIGNED, ROLE
-    String sql = "SELECT T.TASK_ID, T.DATE_CREATED, T.TASK, T.DESCRIPTION, T.CREATEDBY, T.STATUS, T.DUE_DATE, A.ROLE "
+    // ✅ ADDED REMARKS to the SELECT statement
+    String sql = "SELECT T.TASK_ID, T.DATE_CREATED, T.TASK, T.DESCRIPTION, T.CREATEDBY, T.STATUS, T.DUE_DATE, T.REMARKS, A.ROLE "
                + "FROM \"ASSIGNED TASK\" A "
                + "JOIN Task T ON A.TASKASSIGNED = T.TASK_ID "
                + "WHERE A.ASSINGEDTO = ?";
@@ -64,6 +62,7 @@ public class userTASK extends javax.swing.JFrame {
             columns.add("Created By");
             columns.add("Status");
             columns.add("Due Date");
+            columns.add("Remarks");  // ✅ ADD THIS
             columns.add("Role");
 
             Vector<Vector<Object>> data = new Vector<>();
@@ -76,6 +75,7 @@ public class userTASK extends javax.swing.JFrame {
                 row.add(rs.getInt("CREATEDBY"));
                 row.add(rs.getString("STATUS"));
                 row.add(rs.getString("DUE_DATE"));
+                row.add(rs.getString("REMARKS"));  // ✅ ADD THIS
                 row.add(rs.getString("ROLE"));
                 data.add(row);
             }
@@ -108,10 +108,11 @@ public class userTASK extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        prof = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         TASK = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         TaskTable = new javax.swing.JTable();
         update = new javax.swing.JButton();
@@ -131,26 +132,18 @@ public class userTASK extends javax.swing.JFrame {
         jLabel1.setText("USER DASHBOARD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
+        prof.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profMouseClicked(evt);
+            }
+        });
+        jPanel2.add(prof, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 0, 120, 80));
+
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 0, 580, 80);
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jButton2.setBackground(new java.awt.Color(0, 102, 204));
-        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton2.setText("VIEW PROFILE");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 130, 23));
 
         jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -175,7 +168,17 @@ public class userTASK extends javax.swing.JFrame {
                 TASKActionPerformed(evt);
             }
         });
-        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, 100, -1));
+        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 100, -1));
+
+        jButton3.setBackground(new java.awt.Color(0, 153, 204));
+        jButton3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton3.setText("PRINT");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 130, -1));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
@@ -233,16 +236,6 @@ public class userTASK extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        view v = new view ();
-        v.setVisible(true);
-        this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2MouseClicked
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
         LOGin log = new LOGin();
         log.setVisible(true);
@@ -295,11 +288,44 @@ public class userTASK extends javax.swing.JFrame {
 
     private void VIEWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VIEWActionPerformed
         
-        viewTask vew = new viewTask();
-        vew.setVisible(true);
-        this.dispose();
+       int selectedRow = TaskTable.getSelectedRow();
+    
+    if (selectedRow == -1) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "Please select a task from the table first.",
+            "No Task Selected", javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // ✅ UPDATED: Get values including REMARKS (index 7)
+    String dateCreated = String.valueOf(TaskTable.getValueAt(selectedRow, 1));
+    String task = (String) TaskTable.getValueAt(selectedRow, 2);
+    String description = (String) TaskTable.getValueAt(selectedRow, 3);
+    String status = (String) TaskTable.getValueAt(selectedRow, 5);
+    String dueDate = (String) TaskTable.getValueAt(selectedRow, 6);
+    String remarks = (String) TaskTable.getValueAt(selectedRow, 7);  // ✅ GET REMARKS
+    
+    // Open viewTask with data including remarks
+    viewTask vew = new viewTask(dateCreated, dueDate, task, description, status, remarks);
+    vew.setVisible(true);
+    this.dispose();
         // TODO add your handling code here:
     }//GEN-LAST:event_VIEWActionPerformed
+
+    private void profMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profMouseClicked
+        view v = new view ();
+        v.setVisible(true);
+        this.dispose();
+        // TODO add your handling code here:
+    }//GEN-LAST:event_profMouseClicked
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        TRY T = new TRY();
+        T.setVisible(true);
+        this.dispose();
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -342,12 +368,13 @@ public class userTASK extends javax.swing.JFrame {
     private javax.swing.JTable TaskTable;
     private javax.swing.JButton VIEW;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel prof;
     private javax.swing.JButton update;
     // End of variables declaration//GEN-END:variables
 }

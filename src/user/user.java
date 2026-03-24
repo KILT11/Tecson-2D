@@ -7,6 +7,8 @@ package user;
 
 import main.LOGin;
 import config.SessionManager;
+import java.io.File;
+import javax.swing.ImageIcon;
 /**
  *
  * @author USER27
@@ -17,20 +19,50 @@ public class user extends javax.swing.JFrame {
      * Creates new form user
      */
     public user() {
-       initComponents();
+    initComponents();
 
-        // ✅ CORRECT - uses SessionManager directly, NOT config.SessionManager
-        if (!SessionManager.getInstance().isLoggedIn() ||
-            !"User".equals(SessionManager.getInstance().getUserType())) {
-            javax.swing.JOptionPane.showMessageDialog(null,
-                "Access Denied! Please log in first.",
-                "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
-            LOGin log = new LOGin();   // ← goes directly to LOGin
-            log.setVisible(true);
-            this.dispose();
-            return;
-        }
+    if (!SessionManager.getInstance().isLoggedIn() ||
+        !"User".equals(SessionManager.getInstance().getUserType())) {
+
+        javax.swing.JOptionPane.showMessageDialog(null,
+            "Access Denied! Please log in first.",
+            "Unauthorized", javax.swing.JOptionPane.ERROR_MESSAGE);
+
+        LOGin log = new LOGin();
+        log.setVisible(true);
+        this.dispose();
+        return;
     }
+
+    // ✅ ADD THIS LINE
+    loadProfileImage();
+}
+    private void loadProfileImage() {
+    SessionManager session = SessionManager.getInstance();
+
+    String imagePath = System.getProperty("user.dir") + File.separator
+            + "src" + File.separator + "image" + File.separator;
+
+    String fileName = "profile_" + session.getUserId() + ".png";
+    File file = new File(imagePath + fileName);
+
+    ImageIcon icon;
+
+    if (file.exists()) {
+        // ✅ If user uploaded image
+        icon = new ImageIcon(file.getAbsolutePath());
+    } else {
+        // ✅ If no image → use default
+        java.net.URL url = getClass().getResource("/image/Profile.png");
+        icon = (url != null) ? new ImageIcon(url) : null;
+    }
+
+    if (icon != null) {
+        java.awt.Image img = icon.getImage().getScaledInstance(100, 80, java.awt.Image.SCALE_SMOOTH);
+        prof.setIcon(new ImageIcon(img));
+    }
+}
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,8 +76,8 @@ public class user extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        prof = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         TASK = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -64,26 +96,18 @@ public class user extends javax.swing.JFrame {
         jLabel1.setText("USER DASHBOARD");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 10, 290, 60));
 
+        prof.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                profMouseClicked(evt);
+            }
+        });
+        jPanel2.add(prof, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 0, 120, 80));
+
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 0, 580, 80);
 
         jPanel3.setBackground(new java.awt.Color(51, 153, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jButton2.setBackground(new java.awt.Color(0, 102, 204));
-        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton2.setText("VIEW PROFILE");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 130, 23));
 
         jButton1.setBackground(new java.awt.Color(0, 102, 204));
         jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -108,7 +132,7 @@ public class user extends javax.swing.JFrame {
                 TASKActionPerformed(evt);
             }
         });
-        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 130, -1));
+        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 130, -1));
 
         jButton3.setBackground(new java.awt.Color(0, 153, 204));
         jButton3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -118,7 +142,7 @@ public class user extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 130, 130, -1));
+        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 130, -1));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
@@ -148,16 +172,6 @@ public class user extends javax.swing.JFrame {
        
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-             view v = new view ();
-                v.setVisible(true);
-                this.dispose();        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2MouseClicked
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void TASKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TASKActionPerformed
         userTASK T = new userTASK();
         T.setVisible(true);
@@ -175,6 +189,13 @@ public class user extends javax.swing.JFrame {
 
 // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void profMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_profMouseClicked
+        view v = new view ();
+                v.setVisible(true);
+                this.dispose(); 
+        // TODO add your handling code here:
+    }//GEN-LAST:event_profMouseClicked
 
     /**
      * @param args the command line arguments
@@ -233,11 +254,11 @@ public class user extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton TASK;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JLabel prof;
     // End of variables declaration//GEN-END:variables
 }

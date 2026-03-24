@@ -32,32 +32,26 @@ public class admin extends javax.swing.JFrame {
 }
  
 private void loadProfileImage() {
-    ImageIcon icon = null;
-    java.net.URL url = getClass().getResource("/image/Profile.png");
-    if (url != null) icon = new ImageIcon(url);
-    if (icon == null || icon.getIconWidth() <= 0) {
-        String[] paths = {
-            System.getProperty("user.dir") + "/src/image/Profile.png",
-            System.getProperty("user.dir") + "\\src\\image\\Profile.png",
-            "src/image/Profile.png"
-        };
-        for (String p : paths) {
-            File f = new File(p);
-            if (f.exists()) { icon = new ImageIcon(f.getAbsolutePath()); break; }
-        }
-    }
-    if (icon != null && icon.getIconWidth() > 0) {
-        java.awt.Image scaled = icon.getImage().getScaledInstance(100, 70, java.awt.Image.SCALE_SMOOTH);
-        profilehere.setIcon(new ImageIcon(scaled));
-        profilehere.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        profilehere.setVerticalAlignment(javax.swing.SwingConstants.CENTER);
-        profilehere.setText("");
+    config.SessionManager session = config.SessionManager.getInstance();
+
+    String imagePath = System.getProperty("user.dir") + File.separator
+            + "src" + File.separator + "image" + File.separator;
+
+    String fileName = "profile_" + session.getUserId() + ".png";
+    File file = new File(imagePath + fileName);
+
+    ImageIcon icon;
+
+    if (file.exists()) {
+        icon = new ImageIcon(file.getAbsolutePath());
     } else {
-        profilehere.setText("👤");
-        profilehere.setFont(new java.awt.Font("Arial", java.awt.Font.PLAIN, 30));
-        profilehere.setForeground(java.awt.Color.WHITE);
-        profilehere.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        System.err.println("Profile.png not found. Working dir: " + System.getProperty("user.dir"));
+        java.net.URL url = getClass().getResource("/image/Profile.png");
+        icon = (url != null) ? new ImageIcon(url) : null;
+    }
+
+    if (icon != null) {
+        java.awt.Image img = icon.getImage().getScaledInstance(100, 70, java.awt.Image.SCALE_SMOOTH);
+        profilehere.setIcon(new ImageIcon(img));
     }
 }
    
@@ -101,7 +95,7 @@ private void loadProfileImage() {
                 profilehereMouseClicked(evt);
             }
         });
-        jPanel2.add(profilehere, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 110, 80));
+        jPanel2.add(profilehere, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 0, 120, 80));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 80));
 

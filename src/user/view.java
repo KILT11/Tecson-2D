@@ -6,18 +6,32 @@
 package user;
 
 import config.SessionManager;
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import main.LOGin;
+
 
 /**
  *
  * @author Administrator
  */
 public class view extends javax.swing.JFrame {
+    private static final String DEFAULT_IMAGE_RESOURCE = "/image/Profile.png";
+   private final String imagePackagePath;
 
    public view() {
-        initComponents();
-        loadUserProfile();
-    }
+    imagePackagePath = System.getProperty("user.dir") + File.separator
+        + "src" + File.separator + "image" + File.separator;
+    initComponents();
+    loadUserProfile();
+    loadProfileImage();  // <-- ADD THIS LINE
+}
 
     /**
      * Loads the logged-in user's info from the session — no extra DB query needed.
@@ -51,6 +65,76 @@ public class view extends javax.swing.JFrame {
         }
     });
 }
+    private void loadProfileImage() {
+    SessionManager session = SessionManager.getInstance();
+
+    String fileName = "profile_" + session.getUserId() + ".png";
+    File file = new File(imagePackagePath + fileName);
+
+    ImageIcon icon;
+
+    if (file.exists()) {
+        icon = new ImageIcon(file.getAbsolutePath());
+    } else {
+        java.net.URL url = getClass().getResource("/image/Profile.png");
+        icon = (url != null) ? new ImageIcon(url) : null;
+    }
+
+    if (icon != null) {
+        Image img = icon.getImage().getScaledInstance(130, 100, Image.SCALE_SMOOTH);
+        newprof.setIcon(new ImageIcon(img));
+    }
+}
+ 
+    private void editProfileImage() {
+    SessionManager session = SessionManager.getInstance();
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileFilter(new FileNameExtensionFilter("Image Files", "png", "jpg", "jpeg"));
+
+    if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File selected = chooser.getSelectedFile();
+
+        // 🔥 Ensure folder exists
+        File dir = new File(imagePackagePath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        // 🔥 Save inside src/image
+        String newFileName = "profile_" + session.getUserId() + ".png";
+        File destination = new File(imagePackagePath + newFileName);
+
+        try {
+            Files.copy(selected.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            loadProfileImage();
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Image saved in src/image successfully!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Error saving image: " + e.getMessage());
+        }
+    }
+}
+
+private void deleteProfileImage() {
+    SessionManager session = SessionManager.getInstance();
+    // Path to the custom user file
+    String customFileName = "profile_" + session.getUserId() + ".png";
+    File customFile = new File(imagePackagePath + customFileName);
+
+    if (customFile.exists()) {
+        if (customFile.delete()) {
+            // Once deleted, loadProfileImage will naturally fall back to Profile.png
+            loadProfileImage();
+            javax.swing.JOptionPane.showMessageDialog(this, "Custom profile deleted. Restored default.");
+        }
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "You are already using the default profile.");
+    }
+}
 
     
     
@@ -67,13 +151,13 @@ public class view extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jPanel3 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        TASK = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
+        newprof = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        edit = new javax.swing.JButton();
+        delete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,52 +176,6 @@ public class view extends javax.swing.JFrame {
         jPanel1.add(jPanel2);
         jPanel2.setBounds(0, 0, 600, 80);
 
-        jPanel3.setBackground(new java.awt.Color(51, 153, 255));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jButton2.setBackground(new java.awt.Color(0, 102, 204));
-        jButton2.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton2.setText("VIEW PROFILE");
-        jButton2.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton2MouseClicked(evt);
-            }
-        });
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        jPanel3.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 140, 20));
-
-        jButton1.setBackground(new java.awt.Color(0, 102, 204));
-        jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        jButton1.setText("LOGOUT");
-        jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jButton1MouseClicked(evt);
-            }
-        });
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, 100, 23));
-
-        TASK.setBackground(new java.awt.Color(0, 102, 204));
-        TASK.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
-        TASK.setText("TASK");
-        TASK.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TASKActionPerformed(evt);
-            }
-        });
-        jPanel3.add(TASK, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 100, -1));
-
-        jPanel1.add(jPanel3);
-        jPanel3.setBounds(420, 80, 180, 310);
-
         table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -152,7 +190,7 @@ public class view extends javax.swing.JFrame {
         jScrollPane1.setViewportView(table);
 
         jPanel1.add(jScrollPane1);
-        jScrollPane1.setBounds(10, 120, 400, 200);
+        jScrollPane1.setBounds(20, 120, 390, 200);
 
         jButton3.setBackground(new java.awt.Color(0, 102, 204));
         jButton3.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
@@ -163,7 +201,38 @@ public class view extends javax.swing.JFrame {
             }
         });
         jPanel1.add(jButton3);
-        jButton3.setBounds(330, 90, 83, 27);
+        jButton3.setBounds(20, 90, 90, 27);
+        jPanel1.add(newprof);
+        newprof.setBounds(440, 90, 140, 100);
+
+        jButton1.setBackground(new java.awt.Color(0, 102, 204));
+        jButton1.setFont(new java.awt.Font("Century Gothic", 1, 14)); // NOI18N
+        jButton1.setText("BACK");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1);
+        jButton1.setBounds(460, 310, 90, 20);
+
+        edit.setText("EDIT");
+        edit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editActionPerformed(evt);
+            }
+        });
+        jPanel1.add(edit);
+        edit.setBounds(440, 190, 60, 23);
+
+        delete.setText("DELETE");
+        delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteActionPerformed(evt);
+            }
+        });
+        jPanel1.add(delete);
+        delete.setBounds(500, 190, 80, 23);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -180,27 +249,6 @@ public class view extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
-       
-        LOGin log = new LOGin();
-        log.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton1MouseClicked
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton2MouseClicked
-        view v = new view();   // ← removed clearSession() from here
-        v.setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_jButton2MouseClicked
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         UpdateProfile up = new UpdateProfile();
         up.setVisible(true);
@@ -210,13 +258,22 @@ public class view extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void TASKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TASKActionPerformed
-        userTASK T = new userTASK();
-        T.setVisible(true);
-        this.dispose();
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       user back = new user();
+       back.setVisible(true);
+       this.dispose();
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
+         deleteProfileImage();
+// TODO add your handling code here:
+    }//GEN-LAST:event_deleteActionPerformed
+
+    private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
+          editProfileImage();
         // TODO add your handling code here:
-    }//GEN-LAST:event_TASKActionPerformed
+    }//GEN-LAST:event_editActionPerformed
 
     /**
      * @param args the command line arguments
@@ -237,15 +294,15 @@ public class view extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton TASK;
+    private javax.swing.JButton delete;
+    private javax.swing.JButton edit;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel newprof;
     private javax.swing.JTable table;
     // End of variables declaration//GEN-END:variables
 }

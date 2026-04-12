@@ -142,7 +142,7 @@ public class user extends javax.swing.JFrame {
                 jButton3ActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 130, -1));
+        jPanel3.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 130, -1));
 
         jPanel1.add(jPanel3);
         jPanel3.setBounds(410, 80, 170, 310);
